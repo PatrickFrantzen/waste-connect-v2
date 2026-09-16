@@ -1,0 +1,9 @@
+.world {
+    height: 40vh;
+    width: 100%;
+    margin-left: unset; // sonst ist das Bild so komisch nach links versetzt
+    background-image: url("../../../assets/img/digitaleWelt.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}

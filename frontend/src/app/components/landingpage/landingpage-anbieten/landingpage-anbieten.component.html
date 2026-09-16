@@ -1,0 +1,708 @@
+<div class="container">
+  <div class="bg-body-tertiary py-3 mb-4">
+    <div>
+      <h1>Ein neues Inserat erstellen:</h1>
+      <h3>Die mit *-gekennzeichneten Felder sind <u>Pflichtfelder</u>.</h3>
+
+      <!-- Bei Form Submit einmal accordion.openAll um Eingaben zu kontrollieren, dann abschicken -->
+
+      <!-- <div class="example-action-buttons">
+      <button mat-button (click)="accordion.openAll()">Expand All</button>
+      <button mat-button (click)="accordion.closeAll()">Collapse All</button>
+    </div> -->
+
+    <form [formGroup]="inseratForm" (submit)="sichern()">
+      <div class="accordion w-100" id="accordionParent">
+        <div class="accordion-item mb-3">
+          <div class="accordion-header">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapseOne"
+              aria-expanded="false"
+              aria-controls="collapseOne"
+              >
+              Hier kannst du nun Entsorgungs- und Recyclingeigenschaften
+              angeben:
+            </button>
+          </div>
+
+          <div
+            id="collapseOne"
+            class="accordion-collapse collapse show"
+            data-bs-parent="#accordionParent"
+            >
+            <div class="accordion-body">
+              <div class="d-flex">
+                <mat-form-field class="w-100">
+                  <mat-label>Abfallbezeichnung </mat-label>
+                  <input
+                    id="abfallbezeichnung"
+                    type="text"
+                    matInput
+                    formControlName="abfallbezeichnung"
+                    />
+
+                    @if(inseratForm.get('abfallbezeichnung')!.hasError('required'))
+                      {
+                      <mat-error>Bitte gebe eine Bezeichnung an.</mat-error>
+                    }
+                  </mat-form-field>
+                  <img
+                    class="help-icon"
+                    src="../../../../assets/icons/help.png"
+                    matTooltip="Beschreibe nun kurz die Eigenschaften und die Herkunft deiner Abfalle. Z.B. Pappe und Papier als Produktionsabfälle aus der Fertigung von Wellpappen"
+                    />
+                  </div>
+
+                  <div class="d-flex">
+                    <mat-form-field class="w-100">
+                      <mat-label>Abfallursprungs-Identifikation </mat-label>
+                      <mat-select
+                        formControlName="abfallursprung"
+                        id="abfallursprung"
+                        >
+                        <mat-option [value]=""></mat-option>
+
+                        @for(avv of allAVV1; track avv.value){
+                          <mat-option [value]="avv.value">
+                            {{ avv.value }}: {{ avv.viewValue }}</mat-option
+                            >
+                          }
+                        </mat-select>
+                        @if(inseratForm.get('abfallursprung')!.hasError('required'))
+                          {
+                          <mat-error>Bitte gebe einen Abfallursprung an.</mat-error>
+                        }
+                      </mat-form-field>
+                      <img
+                        class="help-icon"
+                        src="../../../../assets/icons/help.png"
+                        matTooltip="Diese Nummer definiert den Ursprung des Abfalls."
+                        />
+                      </div>
+
+                      <div class="d-flex">
+                        <mat-form-field class="w-100">
+                          <mat-label>Abfallschlüsselnummer (AVV) </mat-label>
+                          <mat-select
+                            formControlName="abfallschluesselnummer"
+                            id="abfallschluesselnummer"
+                            >
+                            <mat-option [value]=""></mat-option>
+
+                            @for(avv of getFilteredAbfallschluesselnummern(); track
+                              avv.value){
+                              <mat-option [value]="avv.value">
+                                {{ avv.value }}: {{ avv.viewValue }}</mat-option
+                                >
+                              }
+                            </mat-select>
+                            @if(inseratForm.get('abfallschluesselnummer')!.hasError('required'))
+                              {
+                              <mat-error
+                                >Bitte gebe eine Abfallschlüsselnummer an.</mat-error
+                                >
+                              }
+                            </mat-form-field>
+                            <img
+                              class="help-icon"
+                              src="../../../../assets/icons/help.png"
+                              matTooltip="Mit der passenden Abfallschlüsselnummer definierst du den Abfall noch detaillierter!"
+                              />
+                            </div>
+
+                            <div class="d-flex">
+                              <mat-form-field class="w-75">
+                                <mat-label>Abfallmenge* </mat-label>
+                                <input
+                                  id="abfallmenge"
+                                  type="text"
+                                  matInput
+                                  formControlName="abfallmenge"
+                                  />
+
+                                  @if(inseratForm.get('abfallmenge')!.hasError('required')) {
+                                    <mat-error>Bitte gebe eine Abfallmenge an.</mat-error>
+                                  }
+                                </mat-form-field>
+                                <img
+                                  class="help-icon"
+                                  src="../../../../assets/icons/help.png"
+                                  matTooltip="Hier kannst du die Gewichts- oder Volumenmenge deines Abfalls angeben "
+                                  />
+
+                                  <mat-form-field class="w-25">
+                                    <mat-label>Einheit </mat-label>
+                                    <mat-select id="einheit" formControlName="einheit">
+                                      <mat-option value="t">t</mat-option>
+                                      <mat-option value="t/Woche">t/Woche</mat-option>
+                                      <mat-option value="t/Monat">t/Monat</mat-option>
+                                      <mat-option value="t/Jahr">t/Jahr</mat-option>
+                                      <hr />
+                                      <mat-option value="m³">m³</mat-option>
+                                      <mat-option value="m³/Woche">m³/Woche</mat-option>
+                                      <mat-option value="m³/Monat">m³/Monat</mat-option>
+                                      <mat-option value="m³/Jahr">m³/Jahr</mat-option>
+                                    </mat-select>
+                                    @if(inseratForm.get('abfallmenge')!.hasError('required')) {
+                                      <mat-error>Bitte gebe eine Abfallmenge an.</mat-error>
+                                    }
+                                  </mat-form-field>
+                                  <img
+                                    class="help-icon"
+                                    src="../../../../assets/icons/help.png"
+                                    matTooltip="Definiere die Einheit."
+                                    />
+                                  </div>
+
+                                  <div class="col mb-3">
+                                    <label for="intervall" class="form-label">Intervall*</label>
+                                    <img
+                                      class="help-icon"
+                                      src="../../../../assets/icons/help.png"
+                                      matTooltip="Definiere die Häufigkeit der Abfälle."
+                                      />
+
+                                      <div id="intervall" formGroupName="intervall">
+                                        <div class="form-check">
+                                          <input
+                                            class="form-check-input mt-2"
+                                            type="radio"
+                                            formControlName="intervallOption"
+                                            value="Spotmenge"
+                                            id="spotmenge"
+                                            name="intervallOption"
+                                            checked
+                                            />
+                                            <label class="form-check-label" for="spotmenge">
+                                              Spotmenge
+                                            </label>
+                                            <img
+                                              class="help-icon"
+                                              src="../../../../assets/icons/help.png"
+                                              matTooltip="Einmalig anfallender Abfall."
+                                              />
+                                            </div>
+
+                                            <div class="form-check">
+                                              <input
+                                                class="form-check-input mt-2"
+                                                type="radio"
+                                                formControlName="intervallOption"
+                                                value="Wiederkehrend"
+                                                id="wiederkehrend"
+                                                name="intervallOption"
+                                                />
+                                                <label class="form-check-label" for="wiederkehrend">
+                                                  Wiederkehrend
+                                                </label>
+                                                <img
+                                                  class="help-icon"
+                                                  src="../../../../assets/icons/help.png"
+                                                  matTooltip="Der Abfall fällt fortlaufend an "
+                                                  />
+                                                </div>
+
+                                                <div class="form-check">
+                                                  <input
+                                                    class="form-check-input mt-2"
+                                                    type="radio"
+                                                    formControlName="intervallOption"
+                                                    value="Zeitraum"
+                                                    id="date"
+                                                    name="intervallOption"
+                                                    />
+                                                    <label class="form-check-label" for="date">
+                                                      Zeitraum
+                                                    </label>
+                                                    <img
+                                                      class="help-icon"
+                                                      src="../../../../assets/icons/help.png"
+                                                      matTooltip="Abfall fällt nur für einen bestimmten Zeitraum an (z.B. Baustellen)"
+                                                      />
+                                                    </div>
+                                                    @if (showDatepicker) {
+                                                      <div>
+                                                        <div class="form-floating">
+                                                          <input
+                                                            formControlName="dateStart"
+                                                            type="date"
+                                                            name="startDate"
+                                                            id="startDate"
+                                                            class="form-control"
+                                                            />
+                                                            <label for="startDate">Startdatum</label>
+                                                            @if (inseratForm.get('intervall')!.errors?.['dateRange']) {
+                                                              <span
+                                                                class="text-danger"
+                                                                >
+                                                                Startdatum muss vor dem Enddatum liegen
+                                                              </span>
+                                                            }
+                                                          </div>
+                                                          <div class="form-floating mt-3">
+                                                            <input
+                                                              formControlName="dateEnd"
+                                                              type="date"
+                                                              name="endDate"
+                                                              id="endDate"
+                                                              class="form-control"
+                                                              />
+                                                              <label for="endDate">Enddatum</label>
+                                                              @if (inseratForm.get('intervall')!.errors?.['dateRange']) {
+                                                                <span
+                                                                  class="text-danger"
+                                                                  >
+                                                                  Enddatum muss nach dem Startdatum liegenn
+                                                                </span>
+                                                              }
+                                                            </div>
+                                                          </div>
+                                                        }
+                                                      </div>
+                                                    </div>
+
+                                                    <div class="d-flex">
+                                                      <mat-form-field class="w-100">
+                                                        <mat-label>Standort aus Favoriten auswählen</mat-label>
+                                                        <mat-select
+                                                          formControlName="standort_Firma"
+                                                          (selectionChange)="setFavorit($event)"
+                                                          >
+                                                          <mat-option [value]=""></mat-option>
+
+                                                          @for(favorit of firmendaten().standortFavoriten; track
+                                                            favorit){
+                                                            <mat-option [value]="favorit">
+                                                              {{ favorit.bundesland }}, {{ favorit.stadt }},
+                                                              {{ favorit.postleitzahl }}
+                                                            </mat-option>
+                                                          }
+                                                        </mat-select>
+                                                        @if(inseratForm.get('standort_Firma')!.hasError('required'))
+                                                          {
+                                                          <mat-error>Bitte wähle einen Standort aus.</mat-error>
+                                                        }
+                                                      </mat-form-field>
+                                                      <img
+                                                        class="help-icon"
+                                                        src="../../../../assets/icons/help.png"
+                                                        matTooltip="Standort des Abfalls. Mit dieser Angabe kann dein Inserat präziser durch Interessierte gefunden werden."
+                                                        />
+                                                      </div>
+
+                                                      <div class="d-flex">
+                                                        <mat-form-field class="w-100">
+                                                          <mat-label>Bundesländerauswahl</mat-label>
+                                                          <mat-select
+                                                            formControlName="standort_Bundesland"
+                                                            (selectionChange)="getGemeinden($event.value, '')"
+                                                            >
+                                                            <mat-option [value]=""></mat-option>
+
+                                                            @for(bundesland of bundeslaender(); track bundesland){
+                                                              <mat-option [value]="bundesland.name">
+                                                                {{ bundesland.name }}</mat-option
+                                                                >
+                                                              }
+                                                            </mat-select>
+
+                                                            @if(this.inseratForm.get('standort_Bundesland')?.value ===
+                                                              '' || this.inseratForm.get('standort_Bundesland')?.value ===
+                                                              undefined) {
+                                                              <mat-error>Bitte wähle ein Bundesland aus.</mat-error>
+                                                            }
+                                                          </mat-form-field>
+                                                          <img
+                                                            class="help-icon"
+                                                            src="../../../../assets/icons/help.png"
+                                                            matTooltip="Standort des Abfalls. Mit dieser Angabe kann dein Inserat präziser durch Interessierte gefunden werden."
+                                                            />
+                                                          </div>
+
+                                                          <div class="d-flex">
+                                                            <mat-form-field class="w-100">
+                                                              <mat-label>Ortsauswahl</mat-label>
+                                                              <mat-select
+                                                                formControlName="standort_Postleitzahl"
+                                                                (selectionChange)="getStadt($event)"
+                                                                >
+                                                                <mat-option>
+                                                                  <ngx-mat-select-search
+                                                                    [formControl]="filterCtrl"
+                                                                  ></ngx-mat-select-search>
+                                                                </mat-option>
+
+                                                                <mat-option [value]=""></mat-option>
+
+                                                                @for(gemeinde of filteredGemeinden(); track gemeinde){
+                                                                  <mat-option [value]="gemeinde.postalCode">
+                                                                    {{ gemeinde.postalCode }},
+                                                                    {{ gemeinde.name }}</mat-option
+                                                                    >
+                                                                  }
+                                                                </mat-select>
+                                                                @if(this.inseratForm.get('standort_Postleitzahl')?.value ===
+                                                                  '' || this.inseratForm.get('standort_Postleitzahl')?.value
+                                                                  === undefined) {
+                                                                  <mat-error>Bitte wähle einen Ort aus.</mat-error>
+                                                                }
+                                                              </mat-form-field>
+
+                                                              <img
+                                                                class="help-icon"
+                                                                src="../../../../assets/icons/help.png"
+                                                                matTooltip="Präzisiere den Standort des Abfalls. Dadurch ist eine genauere Suche möglich."
+                                                                />
+                                                              </div>
+
+                                                              <div class="d-flex">
+                                                                <mat-form-field class="w-100">
+                                                                  <mat-label>Abfallbeschreibung</mat-label>
+                                                                  <textarea
+                                                                    id="beschreibung"
+                                                                    type="text"
+                                                                    matInput
+                                                                    formControlName="beschreibung"
+                                                                  ></textarea>
+
+                                                                  @if(inseratForm.get('beschreibung')!.hasError('required')) {
+                                                                    <mat-error>Bitte gebe eine Beschreibung an.</mat-error>
+                                                                  }
+                                                                </mat-form-field>
+                                                                <img
+                                                                  class="help-icon"
+                                                                  src="../../../../assets/icons/help.png"
+                    matTooltip="Die detaillierte Beschreibung deiner Abfälle ist entscheidend, um ihre Art, Zusammensetzung und andere relevante Merkmale kurz und klar zu erfassen. 
+                  Je genauer diese Beschreibung ist, desto besser unterstützt dich deine zukünftige Entsorgungs- oder Recyclinganlage."
+                                                                  />
+                                                                </div>
+                                                              </div>
+                                                            </div>
+                                                          </div>
+
+                                                          <div class="accordion-item mb-3">
+                                                            <div class="accordion-header">
+                                                              <button
+                                                                class="accordion-button collapsed"
+                                                                type="button"
+                                                                data-bs-toggle="collapse"
+                                                                data-bs-target="#collapseTwo"
+                                                                aria-expanded="false"
+                                                                aria-controls="collapseTwo"
+                                                                >
+                                                                Wichtige Details zur Logistik:
+                                                              </button>
+                                                            </div>
+
+                                                            <div
+                                                              id="collapseTwo"
+                                                              class="accordion-collapse collapse"
+                                                              data-bs-parent="#accordionParent"
+                                                              >
+                                                              <div class="accordion-body">
+                                                                <div class="d-flex">
+                                                                  <mat-form-field class="w-100">
+                                                                    <mat-label>Logistik: Die Abfälle </mat-label>
+                                                                    <mat-select formControlName="logistik" id="logistik">
+                                                                      <mat-option value="Abfälle werden vom Abfallerzeuger angeliefert">
+                                                                        werden vom Abfallerzeuger angeliefert
+                                                                      </mat-option>
+                                                                      <mat-option value="Abfälle sollen beim Abfallerzeuger abgeholt werden">
+                                                                        sollen beim Abfallerzeuger abgeholt werden
+                                                                      </mat-option>
+                                                                    </mat-select>
+                                                                    @if(inseratForm.get('logistik')!.hasError('required')) {
+                                                                      <mat-error>Bitte wähle eine Option aus.</mat-error>
+                                                                    }
+                                                                  </mat-form-field>
+                                                                  <img
+                                                                    class="help-icon"
+                                                                    src="../../../../assets/icons/help.png"
+                                                                    matTooltip="Entscheide, ob dein Abfall bei dir abgeholt werden soll oder ob du ihn lieber selbst anliefern möchtest."
+                                                                    />
+                                                                  </div>
+
+                                                                  <div class="d-flex">
+                                                                    <mat-form-field class="w-100">
+                                                                      <mat-label>Verladung: </mat-label>
+                                                                      <input
+                                                                        id="verladung"
+                                                                        type="text"
+                                                                        matInput
+                                                                        formControlName="verladung"
+                                                                        />
+                                                                        @if(inseratForm.get('verladung')!.hasError('required')) {
+                                                                          <mat-error>Bitte gebe eine Verladung an.</mat-error>
+                                                                        }
+                                                                      </mat-form-field>
+                                                                      <img
+                                                                        class="help-icon"
+                                                                        src="../../../../assets/icons/help.png"
+                                                                        matTooltip="Hier kannst du weitere Details zur Verladung angeben, z.B. dass die Verladung per Bagger erfolgt oder ob mit einen Flurförderfahrzeug verladen werden kann."
+                                                                        />
+                                                                      </div>
+
+                                                                      <div class="d-flex">
+                                                                        <mat-form-field class="w-100">
+                                                                          <mat-label>Lagerform</mat-label>
+                                                                          <mat-select formControlName="verpackung" id="verpackung">
+                                                                            <mat-option value="lose">lose</mat-option>
+                                                                            <mat-option value="im Abrollcontainer"
+                                                                              >im Abrollcontainer</mat-option
+                                                                              >
+                                                                              <mat-option value="in Ballen gepresst">
+                                                                                in Ballen gepresst
+                                                                              </mat-option>
+                                                                              <mat-option value="im Silo">im Silo</mat-option>
+                                                                              <mat-option value="in BigBags">in BigBags</mat-option>
+                                                                              <mat-option value="auf Euro-Palette">auf Euro-Palette</mat-option>
+                                                                              <mat-option value="auf Einweg-Palette">auf Einweg-Palette</mat-option>
+
+                                                                              <mat-option value="in Absetzmulde"
+                                                                                >in Absetzmulde</mat-option
+                                                                                >
+                                                                                <mat-option value="in mobiler Presse"
+                                                                                  >in mobiler Presse</mat-option
+                                                                                  >
+
+                                                                                  <mat-option value="in Euro-Gitterboxen"
+                                                                                    >in Euro-Gitterboxen</mat-option
+                                                                                    >
+                                                                                    <mat-option value="im Oktacon">im Oktacon</mat-option>
+                                                                                    <mat-option value="In verschiedenen Lagerformen vorhanden"
+                                                                                      >in verschiedenen Lagerformen vorhanden</mat-option
+                                                                                      >
+                                                                                      <mat-option value="nach Absprache"
+                                                                                        >nach Absprache</mat-option
+                                                                                        >
+                                                                                      </mat-select>
+                                                                                      @if(inseratForm.get('verpackung')!.hasError('required')) {
+                                                                                        <mat-error>Bitte wähle eine Lagerform aus.</mat-error>
+                                                                                      }
+                                                                                    </mat-form-field>
+                                                                                    <img
+                                                                                      class="help-icon"
+                                                                                      src="../../../../assets/icons/help.png"
+                                                                                      matTooltip="Hier kannst du beschreiben wie die Eigenschaft der Lagerform ist, z.B. auf Pallette, im Container etc. "
+                                                                                      />
+                                                                                    </div>
+
+                                                                                    <div class="d-flex">
+                                                                                      <mat-form-field class="w-100">
+                                                                                        <mat-label>Gewicht pro Einheit</mat-label>
+                                                                                        <input
+                                                                                          id="gewicht"
+                                                                                          type="text"
+                                                                                          matInput
+                                                                                          formControlName="gewicht"
+                                                                                          />
+                                                                                          @if(inseratForm.get('gewicht')!.hasError('required')) {
+                                                                                            <mat-error
+                                                                                              >Bitte gebe ein Gewicht mit Einheit an.</mat-error
+                                                                                              >
+                                                                                            }
+                                                                                          </mat-form-field>
+                                                                                          <img
+                                                                                            class="help-icon"
+                                                                                            src="../../../../assets/icons/help.png"
+                                                                                            matTooltip="Dies ist eine ungefähre Angabe für die Logistik."
+                                                                                            />
+                                                                                          </div>
+
+                                                                                          @if(showAbmasse){
+                                                                                            <div class="d-flex">
+                                                                                              <mat-form-field class="w-100">
+                                                                                                <mat-label>Abmaße pro Einheit</mat-label>
+                                                                                                <input
+                                                                                                  id="abmasse"
+                                                                                                  type="text"
+                                                                                                  matInput
+                                                                                                  formControlName="abmasse"
+                                                                                                  />
+                                                                                                  @if(inseratForm.get('abmasse')!.hasError('required')) {
+                                                                                                    <mat-error>Bitte gebe die Abmaße mit Einheit an.</mat-error>
+                                                                                                  }
+                                                                                                </mat-form-field>
+                                                                                                <img
+                                                                                                  class="help-icon"
+                                                                                                  src="../../../../assets/icons/help.png"
+                                                                                                  matTooltip="Dies ist eine ungefähre Angabe für die Logistik."
+                                                                                                  />
+                                                                                                </div>
+                                                                                              }
+                                                                                            </div>
+                                                                                          </div>
+                                                                                        </div>
+
+                                                                                        <div class="col mb-3">
+                                                                                          <label for="bildFile" class="form-label">Bild hochladen</label>
+                                                                                          <img
+                                                                                            class="help-icon"
+                                                                                            src="../../../../assets/icons/help.png"
+              matTooltip="Damit deine Abfälle besser identifiziert werden können, hast du nun die Möglichkeit, Bilder hochzuladen. 
+              Bitte sorge dafür, dass die Bilder aussagekräftig sind, um eine präzise Klassifizierung zu ermöglichen. 
+              Die Dateigröße sollte 5MB nicht überschreiten und die Bilder können im Format .jpeg oder .png hochgeladen werden. 
+              Dies erleichtert deinen zukünftigen Entsorgungspartnern die genaue Einschätzung und ermöglicht eine effiziente Verarbeitung der Abfälle."
+                                                                                            />
+                                                                                            <input
+                                                                                              class="form-control"
+                                                                                              type="file"
+                                                                                              id="bildFile"
+                                                                                              (change)="onBildPicked($event)"
+                                                                                              accept="image/png, image/jpg, image/jpeg"
+                                                                                              />
+                                                                                              <small>Maximal 5 Bilder</small>
+                                                                                            </div>
+
+                                                                                            <div class="col mb-3">
+                                                                                              <label for="analyse" class="form-label">Analyse hochladen</label>
+                                                                                              <img
+                                                                                                class="help-icon"
+                                                                                                src="../../../../assets/icons/help.png"
+              matTooltip="Damit deine Abfälle besser identifiziert werden können, hast du die Möglichkeit eine repräsentative Analyse hochzuladen. 
+              Die Dateigröße sollte 5MB nicht überschreiten und die Datei kann im Format .pdf hochgeladen werden. 
+              Dies erleichtert deinen zukünftigen Entsorgungspartnern die genaue Einschätzung und ermöglicht eine effiziente Verarbeitung der Abfälle."
+                                                                                                />
+                                                                                                <input
+                                                                                                  class="form-control"
+                                                                                                  type="file"
+                                                                                                  id="analyse"
+                                                                                                  (change)="onAnalysePicked($event)"
+                                                                                                  accept="application/pdf, image/png, image/jpg, image/jpeg"
+                                                                                                  />
+                                                                                                  <small>Maximal 5 Dokumente</small>
+                                                                                                </div>
+
+                                                                                                <div class="row">
+                                                                                                  <div class="col d-flex justify-content-end">
+                                                                                                    <button
+                                                                                                      class="btn btn-primary"
+                                                                                                      type="submit"
+                [disabled]="
+                  !inseratForm.valid ||
+                  imagePreviewArray.length +
+                    this.inseratForm.get('bildPath')!.value!.length >
+                    5 ||
+                  analysePreviewArray.length +
+                    this.inseratForm.get('analysePath')!.value!.length >
+                    5 ||
+                  imagePreviewArray.length > 5 ||
+                  analysePreviewArray.length > 5
+                "
+                                                                                                      >
+                                                                                                      Inserat veröffentlichen
+                                                                                                    </button>
+                                                                                                  </div>
+                                                                                                </div>
+                                                                                              </div>
+
+                                                                                              <div class="d-flex flex-column">
+                                                                                                <p>Neu hinzugefügte Dateien</p>
+                                                                                                @if (imagePreviewArray.length > 0) {
+                                                                                                  <div class="">
+                                                                                                    @for (imagePreview of imagePreviewArray; track imagePreview; let i = $index) {
+                                                                                                      <div
+                                                                                                        class="image-preview"
+                                                                                                        >
+                                                                                                        <div class="d-flex flex-column w-25">
+                                                                                                          <img [src]="imagePreview" [alt]="bildArray[i].name" />
+                                                                                                          <div>
+                                                                                                            <span> {{ bildArray[i].name }}</span>
+                                                                                                          </div>
+                                                                                                          <button class="btn btn-danger" (click)="deleteImagePreview(i)">
+                                                                                                            Löschen
+                                                                                                          </button>
+                                                                                                        </div>
+                                                                                                      </div>
+                                                                                                    }
+                                                                                                  </div>
+                                                                                                }
+
+                                                                                                @if (analysePreviewArray.length > 0) {
+                                                                                                  <div class="">
+                                                                                                    @for (analyse of analyseArray; track analyse; let i = $index) {
+                                                                                                      <div
+                                                                                                        class="pdf-preview"
+                                                                                                        >
+                                                                                                        <div class="d-flex flex-column w-25">
+                                                                                                          <img
+                                                                                                            src="../../../../assets/icons/pdf.png"
+                                                                                                            [alt]="analyse.name"
+                                                                                                            class="w-25"
+                                                                                                            />
+                                                                                                            <div>
+                                                                                                              <span> {{ analyse.name }}</span>
+                                                                                                            </div>
+                                                                                                            <button
+                                                                                                              class="btn btn-danger"
+                                                                                                              (click)="deleteAnalysePreview(i)"
+                                                                                                              >
+                                                                                                              Löschen
+                                                                                                            </button>
+                                                                                                          </div>
+                                                                                                        </div>
+                                                                                                      }
+                                                                                                    </div>
+                                                                                                  }
+                                                                                                </div>
+
+                                                                                                <div class="d-flex flex-column">
+                                                                                                  <p>Bereits vorhandene Dateien</p>
+
+                                                                                                  <div class="">
+                                                                                                    <div>
+                                                                                                      @if(this.inseratForm.get('bildPath')!.value) {
+                                                                                                        <div class="image-preview">
+                                                                                                          @for (bild of this.inseratForm.get('bildPath')!.value; track
+                                                                                                            bild;) {
+                                                                                                            <div class="d-flex flex-column w-25">
+                                                                                                              <img src="{{ bild }}" alt="Bild" />
+
+                                                                                                              <button
+                                                                                                                type="button"
+                                                                                                                class="btn btn-danger mt-3"
+                                                                                                                (click)="deleteBildPath(bild)"
+                                                                                                                >
+                                                                                                                Löschen
+                                                                                                              </button>
+                                                                                                            </div>
+                                                                                                          }
+                                                                                                        </div>
+                                                                                                      }
+                                                                                                    </div>
+
+                                                                                                    <div>
+                                                                                                      @if(this.inseratForm.get('analysePath')!.value) {
+                                                                                                        <div class="pdf-preview">
+                                                                                                          @for (analyse of this.inseratForm.get('analysePath')!.value;
+                                                                                                            track analyse;) {
+                                                                                                            <div class="d-flex flex-column w-25">
+                                                                                                              <img
+                                                                                                                src="../../../../assets/icons/pdf.png"
+                                                                                                                alt="Analyse"
+                                                                                                                class="w-25"
+                                                                                                                />
+                                                                                                                <div>
+                                                                                                                  <span> {{ modifiyAnalyseName(analyse) }}</span>
+                                                                                                                </div>
+                                                                                                                <button
+                                                                                                                  type="button"
+                                                                                                                  class="btn btn-danger mt-3"
+                                                                                                                  (click)="deleteAnalysePath(analyse)"
+                                                                                                                  >
+                                                                                                                  Löschen
+                                                                                                                </button>
+                                                                                                              </div>
+                                                                                                            }
+                                                                                                          </div>
+                                                                                                        }
+                                                                                                      </div>
+                                                                                                    </div>
+                                                                                                  </div>
+                                                                                                </form>
+                                                                                              </div>
+                                                                                            </div>
+                                                                                          </div>

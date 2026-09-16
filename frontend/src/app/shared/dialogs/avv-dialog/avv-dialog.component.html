@@ -1,0 +1,182 @@
+<div class="container">
+  <div class="row mt-3 py-3 justify-content-center">
+    <mat-form-field>
+      <mat-label>Filter: Abfallursprung</mat-label>
+      <mat-select
+        [formControl]="avv1Filter"
+        (selectionChange)="setHerkunftsfilterFilter($event)"
+      >
+        <mat-select-trigger>
+          {{ avv1Filter.value }}
+        </mat-select-trigger>
+        <mat-option [value]="'Kein Filter ausgewählt'">Alle</mat-option>
+        @for (avv1 of avv1; track avv1.value) {
+        <mat-option [value]="avv1.value"
+          >{{ avv1.value }} {{ avv1.viewValue }}</mat-option
+        >
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Filter: Klassifizierung</mat-label>
+      <mat-select
+        [formControl]="klassifizierungsFilter"
+        (selectionChange)="setKlassifizierungFilter($event)"
+      >
+        <mat-select-trigger>
+          {{ klassifizierungsFilter.value }}
+        </mat-select-trigger>
+        <mat-option [value]="'Kein Filter ausgewählt'">Alle</mat-option>
+        @for (klassifizierung of klassifizierungen; track klassifizierung) {
+        <mat-option [value]="klassifizierung">{{ klassifizierung }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <cdk-virtual-scroll-viewport
+      appendOnly
+      itemSize="50"
+      class="example-viewport"
+    >
+      <table class="w-100">
+        <thead>
+          <tr>
+            <th colspan="8" class="">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <mat-checkbox
+                    class="w-10"
+                    (change)="selectAll('sammeln')"
+                    [checked]="alleSammelnTrue"
+                    >Alle: Sammeln</mat-checkbox
+                  >
+                </div>
+                <div>
+                  <mat-checkbox
+                    class="w-10"
+                    (change)="selectAll('befoerdern')"
+                    [checked]="alleBefoerdernTrue"
+                    >Alle: Befördern</mat-checkbox
+                  >
+                </div>
+
+                <div>
+                  <mat-checkbox
+                    class="w-10"
+                    (change)="selectAll('handeln')"
+                    [checked]="alleHandelnTrue"
+                    >Alle: Handeln</mat-checkbox
+                  >
+                </div>
+                <div>
+                  <mat-checkbox
+                    class="w-10"
+                    (change)="selectAll('makeln')"
+                    [checked]="alleMakelnTrue"
+                    >Alle: Makeln</mat-checkbox
+                  >
+                </div>
+              </div>
+            </th>
+            <th class="w-10 ps-3 pe-3">AVV</th>
+            <th class="w-30">Beschreibung</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *cdkVirtualFor="let item of visibleAVVs()" class="example-item">
+            <td>
+              <mat-checkbox
+                class="w-10"
+                [checked]="avvEntriesSignal()[item.value].sammeln"
+                (change)="selectAVV(item.value, 'sammeln')"
+                >Sammeln</mat-checkbox
+              >
+            </td>
+            <td>
+              <mat-checkbox
+                class="w-10"
+                [checked]="avvEntriesSignal()[item.value].befoerdern"
+                (change)="selectAVV(item.value, 'befoerdern')"
+                >Befördern</mat-checkbox
+              >
+            </td>
+            <td>
+              <mat-checkbox
+                class="w-10"
+                [checked]="avvEntriesSignal()[item.value].lagern"
+                (change)="selectAVV(item.value, 'lagern')"
+                >Lagern</mat-checkbox
+              >
+            </td>
+            <td>
+              <mat-checkbox
+                class="w-10"
+                [checked]="avvEntriesSignal()[item.value].behandeln"
+                (change)="selectAVV(item.value, 'behandeln')"
+                >Behandeln</mat-checkbox
+              >
+            </td>
+            <td>
+              <mat-checkbox
+                class="w-10"
+                [checked]="avvEntriesSignal()[item.value].verwerten"
+                (change)="selectAVV(item.value, 'verwerten')"
+                >Verwerten</mat-checkbox
+              >
+            </td>
+
+            <td>
+              <mat-checkbox
+                class="w-10"
+                [checked]="avvEntriesSignal()[item.value].beseitigen"
+                (change)="selectAVV(item.value, 'beseitigen')"
+                >Beseitigen</mat-checkbox
+              >
+            </td>
+
+            <td>
+              <mat-checkbox
+                class="w-10"
+                [checked]="avvEntriesSignal()[item.value].handeln"
+                (change)="selectAVV(item.value, 'handeln')"
+                >Handeln</mat-checkbox
+              >
+            </td>
+            <td>
+              <mat-checkbox
+                class="w-10"
+                [checked]="avvEntriesSignal()[item.value].makeln"
+                (change)="selectAVV(item.value, 'makeln')"
+                >Makeln</mat-checkbox
+              >
+            </td>
+            <td class="w-10 ps-3 pe-3">
+              {{ item.value }}
+            </td>
+            <td class="w-50">
+              {{ item.viewValue }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </cdk-virtual-scroll-viewport>
+  </div>
+  <div class="d-flex justify-content-end">
+    <button
+      class="w-25 btn btn-primary mb-3"
+      [disabled]="!avvEntriesSignal()"
+      (click)="save()"
+      type="button"
+    >
+      Speichern
+    </button>
+    <button
+      class="w-25 btn btn-secondary ms-3 mb-3"
+      (click)="close()"
+      type="button"
+    >
+      Abbrechen
+    </button>
+  </div>
+</div>

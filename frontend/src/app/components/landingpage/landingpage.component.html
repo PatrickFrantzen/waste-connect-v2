@@ -1,0 +1,86 @@
+<div>
+  <div class="landingpage-header">
+
+    <!-- Accordion Bereich -->
+    <div class="accordion w-100" id="accordionExample">
+      <!-- Inserate -->
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseOne"
+            aria-expanded="false"
+            aria-controls="collapseOne"
+          >
+            Inserate suchen
+          </button>
+        </h2>
+        <div
+          id="collapseOne"
+          class="accordion-collapse collapse"
+          data-bs-parent="#accordionExample"
+          [ngClass]="showSignal().show === 'inserate' ? 'show' : ''"
+        >
+          <div class="accordion-body">
+            <app-landingpage-finden
+            >
+            </app-landingpage-finden>
+          </div>
+        </div>
+      </div>
+
+      <!-- Entsorger -->
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseThree"
+            aria-expanded="false"
+            aria-controls="collapseThree"
+          >
+            Abfallentsorger suchen
+          </button>
+        </h2>
+        <div
+          id="collapseThree"
+          class="accordion-collapse collapse"
+          data-bs-parent="#accordionExample"
+          [ngClass]="showSignal().show === 'entsorger' ? 'show' : ''"
+        >
+          <div class="accordion-body">
+            <app-landingpage-entsorger-finden>
+            </app-landingpage-entsorger-finden>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-3 container remove-padding">
+      @if(showSignal().show === 'inserate') {
+      <app-landingpage-inserate
+      >
+      </app-landingpage-inserate>
+      } 
+      @else if (showSignal().show === 'entsorger') {
+        <app-landingpage-entsorger
+        ></app-landingpage-entsorger>
+      }
+      @else if (showSignal().show === 'logistik') {
+        <div>
+          Test Logistik
+        </div>
+      }
+      @else {
+        <div class="">
+          <app-landingpage-start></app-landingpage-start>
+
+        </div>
+      }
+    </div>
+
+  </div>
+</div>

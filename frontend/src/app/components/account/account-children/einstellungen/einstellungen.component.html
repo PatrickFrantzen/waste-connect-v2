@@ -1,0 +1,192 @@
+<div class="container">
+  <div class="row mt-3 py-3 mb-4 justify-content-center">
+    <h1>Hier kannst du diverse Profileinstellungen ändern.</h1>
+
+    <div class="accordion mb-3" id="passwordAccordion">
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapsePassword"
+          >
+            <h3>Passwort ändern</h3>
+          </button>
+        </div>
+
+        <div
+          id="collapsePassword"
+          class="accordion-collapse collapse"
+          data-bs-parent="passwordAccordion"
+        >
+          <div class="accordion-body">
+            <form [formGroup]="changePasswordForm" (submit)="changePassword()">
+              <div class="mb-5">
+              <mat-form-field class="w-100">
+                <mat-label>Altes Passwort</mat-label>
+                <input
+                  id="oldPassword"
+                  type="password"
+                  matInput
+                  formControlName="oldPassword"
+                />
+                @if(changePasswordForm.get('oldPassword')!.hasError('required'))
+                {
+                <mat-error class="mb-3">Bitte geben Sie Ihr altes Passwort ein.</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field class="w-100">
+                <mat-label>Neues Passwort</mat-label>
+                <input
+                  id="newPassword"
+                  type="password"
+                  matInput
+                  formControlName="newPassword"
+                />
+                @if(changePasswordForm.get('newPassword')!.hasError('required'))
+                {
+                <mat-error class="mb-3">Bitte geben Sie Ihr neues Passwort ein.</mat-error>
+                }
+                @if(this.changePasswordForm.get('newPassword')!.hasError('passwordStrength')
+                && this.changePasswordForm.get('newPassword')!.touched) {
+                <mat-error class="mb-3"
+                  >Das Passwort muss mindestens aus 8 Zeichen, einen
+                  Kleinbuchstaben, einen Großbuchstaben, eine Zahl und ein
+                  Sonderzeichen "!&#64;#$%&*?" beinhalten.</mat-error
+                >
+                } @if(this.changePasswordForm.get('newPassword')!.invalid &&
+                this.changePasswordForm.get('newPassword')!.touched){
+                <mat-error class="mb-3">Bitte geben Sie mindestens 8 Zeichen ein.</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field class="w-100">
+                <mat-label>Neues Passwort wiederholen</mat-label>
+                <input
+                  id="newPasswordRepeat"
+                  type="password"
+                  matInput
+                  formControlName="confirmpassword"
+                />
+                @if(this.changePasswordForm.get('confirmpassword')!.invalid &&
+                this.changePasswordForm.get('confirmpassword')!.touched) {
+                <mat-error class="mb-3">Bitte wiederhole dein neues Passwort.</mat-error>
+                }
+
+                @if( this.changePasswordForm.get('newPassword')!.value !==
+                this.changePasswordForm.get('confirmpassword')!.value &&
+                this.changePasswordForm.get('confirmpassword')!.touched) {
+                <mat-error class="mb-3">Die Passwörter stimmen nicht überein.</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+              <button
+                type="submit"
+                class="btn btn-primary mt-3"
+                [disabled]="
+                  this.changePasswordForm.invalid ||
+                  this.changePasswordForm.get('newPassword')!.value !==
+                    this.changePasswordForm.get('confirmpassword')!.value
+                "
+              >
+                Passwort ändern
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Firmenprofil -->
+
+    <div class="accordion mb-3" id="profilAccordion">
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseProfile"
+          >
+            <h3>Firmendaten ändern</h3>
+          </button>
+        </div>
+        <div
+          id="collapseProfile"
+          class="accordion-collapse collapse"
+          data-bs-parent="profilAccordion"
+        >
+          <div class="accordion-body">
+            <app-firmenprofil></app-firmenprofil>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EntsorgerProfil -->
+
+    <div class="accordion mb-3" id="entsorgerAccordion">
+      <div class="accordion-item">
+        <div class="accordion-header">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseEntsorger"
+          >
+            <h3>Abfallentsorgerprofil aktualisieren</h3>
+          </button>
+        </div>
+
+        <div
+          id="collapseEntsorger"
+          class="accordion-collapse collapse"
+          data-bs-parent="entsorgerAccordion"
+        >
+          <div class="accordion-body">
+            <app-entsorgerprofil></app-entsorgerprofil>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logistikprofil -->
+    <!-- <div class="accordion mb-3" id="logistikAccordion">
+      <div class="accordion-item">
+        <div
+          class="accordion-header"
+          [matTooltip]="
+            firmenProfil.logistik
+              ? ''
+              : 'Bitte wähle in den Firmendaten die Logistik aus und speicher deine Änderungen.'
+          "
+        >
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseLogistik"
+            [disabled]="firmenProfil.logistik === false"
+          >
+            <h3>Logistikprofil aktualisieren</h3>
+          </button>
+        </div>
+
+        <div
+          id="collapseLogistik"
+          class="accordion-collapse collapse"
+          data-bs-parent="logistikAccordion"
+        >
+          <div class="accordion-body">
+            <app-logistikprofil
+              [logistikProfil]="logistikProfil"
+            ></app-logistikprofil>
+          </div>
+        </div>
+      </div>
+    </div> -->
+  </div>
+</div>

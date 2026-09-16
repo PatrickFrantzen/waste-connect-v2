@@ -1,0 +1,364 @@
+<div class="container">
+  <div class="bg-body-tertiary">
+    <div class="d-flex justify-content-end align-items-center p-2">
+      <button
+        class="btn btn-primary close-button"
+        type="button"
+        (click)="closeDialog()"
+        >
+        Schließen
+      </button>
+    </div>
+    <div class="card mb-3 flex-column">
+      <div class="m-3 d-flex justify-content-between flex-column">
+        <span class="font-bezeichnung mb-3">Firma: {{ entsorger.firmendaten.firmenname }}</span>
+        <span class="font-avv">AnsprechpartnerIn: {{ entsorger.entsorgerdaten.ansprechpartner }}</span>
+      </div>
+      <div class="d-flex ms-3 me-3">
+        <div>
+          @if (showEmailForm) { @if(entsorger.private && !token){
+            <div class="emailForm">
+              <p><b>Interesse geweckt?</b></p>
+              <p>Schicke direkt eine Email:</p>
+              <form
+                [formGroup]="nachrichtFromUnknownForm"
+                (submit)="sendMailFromNotLoggedInUser(entsorger)"
+                >
+                <div class="mb-3 form-floating form-group">
+                  <input
+                    id="email"
+                    matInput
+                    type="text"
+                    placeholder="Deine E-Mail"
+                    formControlName="email"
+                    class="form-control"
+                    />
+                    <label for="email">Deine Email:</label>
+                  </div>
+
+                  <div class="mb-3 form-floating form-group">
+                    <input
+                      id="telefon"
+                      matInput
+                      type="text"
+                      placeholder="Deine Telefonnummer (optional)"
+                      formControlName="telefon"
+                      class="form-control"
+                      />
+                      <label for="email">Deine Telefonnummer (optional):</label>
+                    </div>
+
+                    <div class="mb-3 form-floating form-group">
+                      <input
+                        id="betreff"
+                        matInput
+                        type="text"
+                        placeholder="Betreff"
+                        formControlName="betreff"
+                        class="form-control"
+                        />
+                        <label for="betreff">Betreff:</label>
+                      </div>
+
+                      <div class="mb-3 form-floating form-group">
+                        <textarea
+                          id="nachricht"
+                          matInput
+                          type="text"
+                          placeholder="Nachricht"
+                          formControlName="nachricht"
+                          class="form-control"
+                        ></textarea>
+                        <label for="nachricht">Nachricht:</label>
+                      </div>
+                      <button
+                        class="btn btn-primary"
+                        type="submit"
+                        [disabled]="nachrichtFromUnknownForm.invalid"
+                        >
+                        E-Mail senden
+                      </button>
+                    </form>
+                  </div>
+                } @else if(entsorger.private && token) {
+                  <div class="emailForm">
+                    <p><b>Interesse geweckt?</b></p>
+                    <p>Schicke direkt eine Email an die Firma:</p>
+                    <form
+                      [formGroup]="nachrichtFromKnownForm"
+                      (submit)="sendEntsorgerMailFromLoggedInUser(entsorger)"
+                      >
+                      <div class="mb-3 form-floating form-group">
+                        <input
+                          id="betreff"
+                          matInput
+                          type="text"
+                          placeholder="Betreff"
+                          formControlName="betreff"
+                          class="form-control"
+                          />
+                          <label for="betreff">Betreff:</label>
+                        </div>
+
+                        <div class="mb-3 form-floating form-group">
+                          <textarea
+                            id="nachricht"
+                            matInput
+                            type="text"
+                            placeholder="Nachricht"
+                            formControlName="nachricht"
+                            class="form-control"
+                          ></textarea>
+                          <label for="nachricht">Nachricht:</label>
+                        </div>
+                        <button
+                          class="btn btn-primary"
+                          type="submit"
+                          [disabled]="nachrichtFromKnownForm.invalid"
+                          >
+                          E-Mail senden
+                        </button>
+                      </form>
+                    </div>
+                  } @else if (!entsorger.private && token) {
+                    <div class="emailForm">
+                      <p><b>Interesse geweckt?</b></p>
+                      <p>Schicke direkt eine Email an die Firma:</p>
+                      <form
+                        [formGroup]="nachrichtFromKnownForm"
+                        (submit)="sendEntsorgerMailFromLoggedInUser(entsorger)"
+                        >
+                        <div class="mb-3 form-floating form-group">
+                          <input
+                            id="betreff"
+                            matInput
+                            type="text"
+                            placeholder="Betreff"
+                            formControlName="betreff"
+                            class="form-control"
+                            />
+                            <label for="betreff">Betreff:</label>
+                          </div>
+
+                          <div class="mb-3 form-floating form-group">
+                            <textarea
+                              id="nachricht"
+                              matInput
+                              type="text"
+                              placeholder="Nachricht"
+                              formControlName="nachricht"
+                              class="form-control"
+                            ></textarea>
+                            <label for="nachricht">Nachricht:</label>
+                          </div>
+                          <button
+                            class="btn btn-primary"
+                            type="submit"
+                            [disabled]="nachrichtFromKnownForm.invalid"
+                            >
+                            E-Mail senden
+                          </button>
+                        </form>
+                      </div>
+                    }
+                    @if (!entsorger.private) {
+                      <div class="mt-3">
+                        <p>Sende eine Email mit deinem Emailprogramm:</p>
+                        <button
+                          class="btn btn-primary"
+                          type="button"
+                          (click)="sendEntsorgerEmailViaOutlook(entsorger)"
+                          >
+                          E-Mail mit Outlook senden
+                        </button>
+                      </div>
+                    }
+                  } @else { @if (entsorger.entsorgerFilepath.logoPath && entsorger.entsorgerFilepath.logoPath.length === 1)
+                    {
+                    <img
+                      class="card-img-top"
+                      [src]="entsorger.entsorgerFilepath.logoPath[0]"
+                      [alt]="entsorger.firmendaten.firmenname"
+                      />
+                    } @else if(entsorger.entsorgerFilepath.logoPath &&entsorger.entsorgerFilepath.logoPath.length > 1) {
+                      <div class="image-container">
+                        <img class="card-img-top" [src]="images![currentImageIndex]" />
+
+                        <img
+                          class="arrow left-arrow"
+                          src="../../../../assets/icons/left-arrow.png"
+                          (click)="previousImage()"
+                          />
+
+                          <img
+                            class="arrow right-arrow"
+                            src="../../../../assets/icons/right-arrow.png"
+                            (click)="nextImage()"
+                            />
+                          </div>
+                        } @else {
+                          <img
+                            class="card-img-top"
+                            src="../../../../assets/img/placeholder.png"
+                            alt="Kein Bild vorhanden"
+                            />
+                            } }
+                          </div>
+                          <div class="ms-3 w-100">
+                            <p class="beschreibung">
+                              <b>Tätigkeiten:</b>
+                              @if (entsorger.entsorgerBeschreibung.taetigkeitsbereich.length === 1) {
+                                {{ entsorger.entsorgerBeschreibung.taetigkeitsbereich }} }
+                                @else if(entsorger.entsorgerBeschreibung.taetigkeitsbereich.length > 1) {
+                                {{ entsorger.entsorgerBeschreibung.taetigkeitsbereich.join(", ") }} }
+                                @else{
+                                {{ "Keine Angaben" }} }
+                              </p>
+                              <hr />
+                              <p>
+                                <b>Dienstleistungen</b>
+                                @if (entsorger.entsorgerBeschreibung.dienstleistungen.length === 1) {
+                                  {{ entsorger.entsorgerBeschreibung.dienstleistungen }} }
+                                  @else if(entsorger.entsorgerBeschreibung.dienstleistungen.length > 1) {
+                                  {{ entsorger.entsorgerBeschreibung.dienstleistungen.join(", ") }} }
+                                  @else{
+                                  {{ "Keine Angaben" }} }
+                                </p>
+                                <div class="d-flex">
+                                  <p class="me-1">
+                                    <b>Besonderheiten:</b>
+                                    @if (entsorger.entsorgerBeschreibung.besonderheiten) {
+                                      {{ entsorger.entsorgerBeschreibung.besonderheiten }} } @else{ {{ "Keine Angaben" }} }
+                                    </p>
+                                  </div>
+                                  <hr />
+                                  <p><b>Standort:</b> {{ entsorger.firmendaten.postleitzahl}}, {{ entsorger.firmendaten.stadt }}, {{ entsorger.firmendaten.bundesland }}</p>
+                                  <p>
+                                    <b>Logistik:</b>
+                                    @if(entsorger.entsorgerBeschreibung.logistik.length === 1) {
+                                      {{ entsorger.entsorgerBeschreibung.logistik }} } @else if(entsorger.entsorgerBeschreibung.logistik.length > 1) {
+                                      {{ entsorger.entsorgerBeschreibung.logistik.join(", ") }} } @else{ {{ "Keine Angaben" }} }
+                                    </p>
+
+                                    <hr />
+
+                                    <div class="avv-area">
+                                      <p class="mb-1">
+                                        <b>AVV:</b>
+                                      </p>
+                                      <div class="avv-list">
+                                        <div class="avv-item">
+                                          @for( avv of entsorger.avvZusammenfassung; track avv) {
+                                            <p class="mb-0">{{ avv | replaceBefoerdern }}</p>
+
+                                          }
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <hr />
+                                <div class="ms-3 me-3 d-flex justify-content-between align-items-end">
+                                  <div>
+                                    <div class="p-2">
+                                      @if (entsorger.entsorgerFilepath.zertifikatePath && entsorger.entsorgerFilepath.zertifikatePath.length
+                                        == 1) {
+                                        <b class="pdf-titel">Zertifikate:</b>
+                                        <img
+                                          class="cursor-pointer icon ms-1"
+                                          src="../../../../assets/icons/pdf.png"
+                                          alt="PDF-Bild der Analyse"
+              matTooltip="Zertifikat '{{
+                entsorger.entsorgerFilepath.zertifikatePath[0] | dateinamen
+              }}' ansehen"
+              (click)="
+                openPdfViewer(entsorger._id!, entsorger.entsorgerFilepath.zertifikatePath[0])
+              "
+                                          />
+                                        } @else if(entsorger.entsorgerFilepath.zertifikatePath &&
+                                          entsorger.entsorgerFilepath.zertifikatePath.length > 1){
+                                          <b class="pdf-titel">Zertifikate:</b>
+                                          @for(zertifikat of entsorger.entsorgerFilepath.zertifikatePath; track entsorger._id) {
+                                            <img
+                                              class="cursor-pointer icon ms-1"
+                                              src="../../../../assets/icons/pdf.png"
+                                              alt="PDF-Bild der Analyse"
+                                              matTooltip="Zertifikat '{{ zertifikat | dateinamen }}' ansehen"
+                                              (click)="openPdfViewer(entsorger._id!, zertifikat)"
+                                              />
+                                              } }
+                                            </div>
+
+                                            <div class="p-2">
+                                              @if (entsorger.entsorgerFilepath.genehmigungenPath &&
+                                                entsorger.entsorgerFilepath.genehmigungenPath.length == 1) {
+                                                <b class="pdf-titel">Genehmigungen:</b>
+                                                <img
+                                                  class="cursor-pointer icon ms-1"
+                                                  src="../../../../assets/icons/pdf.png"
+                                                  alt="PDF-Bild der Analyse"
+              matTooltip="Genehmigung '{{
+                entsorger.entsorgerFilepath.genehmigungenPath[0] | dateinamen
+              }}' ansehen"
+              (click)="
+                openPdfViewer(entsorger._id!, entsorger.entsorgerFilepath.genehmigungenPath[0])
+              "
+                                                  />
+                                                } @else if(entsorger.entsorgerFilepath.genehmigungenPath &&
+                                                  entsorger.entsorgerFilepath.genehmigungenPath.length > 1){
+                                                  <b class="pdf-titel">Genehmigungen:</b>
+                                                  @for(genehmigung of entsorger.entsorgerFilepath.genehmigungenPath; track
+                                                    entsorger._id) {
+                                                    <img
+                                                      class="cursor-pointer icon ms-1"
+                                                      src="../../../../assets/icons/pdf.png"
+                                                      alt="PDF-Bild der Analyse"
+                                                      matTooltip="Genehmigung '{{ genehmigung | dateinamen }}' ansehen"
+                                                      (click)="openPdfViewer(entsorger._id!, genehmigung)"
+                                                      />
+                                                      } }
+                                                    </div>
+                                                  </div>
+
+                                                  <div class="icon-area mb-1 d-flex">
+                                                    @if (this.erstellerWebsite.value !== null) {
+                                                      <img
+                                                        class="cursor-pointer icon hoverIcon"
+                                                        src="../../../../assets/icons/webseite.png"
+                                                        alt="Teilen"
+                                                        [matTooltip]="erstellerWebsite.value!"
+                                                        (click)="openWebsite()"
+                                                        />
+                                                    }
+                                                    <img
+                                                      class="cursor-pointer icon hoverIcon"
+                                                      src="../../../../assets/icons/phone.png"
+                                                      alt="Teilen"
+                                                      [matTooltip]="entsorger.entsorgerdaten.telefonnummer"
+                                                      />
+                                                      <img
+                                                        class="cursor-pointer icon hoverIcon"
+                                                        src="../../../../assets/icons/mail.png"
+                                                        alt="Teilen"
+                                                        [matTooltip]="entsorger.entsorgerdaten.email"
+                                                        (click)="toggleEmailForm()"
+                                                        />
+                                                        <img
+                                                          class="cursor-pointer icon hoverIcon"
+                                                          src="../../../../assets/icons/share.png"
+                                                          alt="Teilen"
+                                                          matTooltip="Inserat teilen"
+                                                          (click)="shareEntsorgerprofil(entsorger)"
+                                                          />
+                                                          <img
+                                                            class="cursor-pointer icon hoverIcon"
+                                                            src="../../../../assets/icons/print.png"
+                                                            alt="Teilen"
+                                                            matTooltip="Inserat drucken"
+                                                            (click)="printEntsorgerprofil()"
+                                                            />
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>

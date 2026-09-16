@@ -1,0 +1,91 @@
+<div class="container">
+  <div class="row mt-3 account-height justify-content-center">
+    <div>
+      <p>Gesendete Nachrichten:</p>
+      @if(accountSignal.gesendeteNachrichtenForDisplay().nachrichten.length > 0) {
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Status</th>
+            <th scope="col">Betreff</th>
+            <th scope="col">Nachricht</th>
+            <th scope="col">An:</th>
+            <th scope="col">Datum</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (message of
+          accountSignal.gesendeteNachrichtenForDisplay().nachrichten;
+          track message) {
+          <tr>
+            <td>{{ message.status }}</td>
+            <td>{{ message.subject }}</td>
+            <td>{{ message.message }}</td>
+            <td>{{ message.emailadresseOfEmpfaenger }}</td>
+            <td>{{ message.date }}</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+
+      @if(accountSignal.gesendeteNachrichtenForDisplay().nachrichten.length
+      > 0) {
+      <mat-paginator
+        [length]="
+          accountSignal.gesendeteNachrichtenForDisplay().numberOfNachrichten
+        "
+        [pageSize]="accountSignal.pageSizeGesendeteNachrichten()"
+        [pageSizeOptions]="gesendeteNachrichtenPageSizeOptions"
+        (page)="onChangeGesendeteNachrichten($event)"
+      >
+      </mat-paginator>
+      }
+     } 
+     @else {
+      <p>Keine Nachrichten vorhanden</p>
+      }
+    </div>
+
+    <div>
+      <p>Empfangene Nachrichten:</p>
+      @if(accountSignal.empfangeneNachrichtenForDisplay().nachrichten.length
+      > 0){
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Status</th>
+            <th scope="col">Betreff</th>
+            <th scope="col">Nachricht</th>
+            <th scope="col">An:</th>
+            <th scope="col">Datum</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (message of
+          accountSignal.empfangeneNachrichtenForDisplay().nachrichten;
+          track message) {
+          <tr>
+            <td>{{ message.status }}</td>
+            <td>{{ message.subject }}</td>
+            <td>{{ message.message }}</td>
+            <td>{{ message.emailadresseOfSender }}</td>
+            <td>{{ message.date }}</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+      @if(accountSignal.empfangeneNachrichtenForDisplay().nachrichten.length
+      > 0) {
+      <mat-paginator
+        [length]="accountSignal.empfangeneNachrichtenForDisplay().numberOfNachrichten"
+        [pageSize]="accountSignal.pageSizeEmpfangeneNachrichten()"
+        [pageSizeOptions]="empfangeneNachrichtenPageSizeOptions"
+        (page)="onChangeEmpfangeneNachrichten($event)"
+      >
+      </mat-paginator>
+      } } @else {
+      <p>Keine Nachrichten vorhanden</p>
+      }
+    </div>
+  </div>
+</div>

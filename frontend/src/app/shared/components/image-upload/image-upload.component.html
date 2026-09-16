@@ -1,0 +1,69 @@
+
+<hr>
+<div class="mb-3 form-group form-floating">
+  <input
+    id="{{ inputId }}"
+    type="file"
+    class="form-control"
+    (change)="onImagePicked($event)"
+    [accept]="getAcceptedFormats()"
+  />
+  <label for="{{ inputId }}" class="form-label">{{ label }}</label>
+</div>
+
+<div>
+  <p>Ausgewählte Dateien:</p>
+
+  @if (imagePreviewArray.length > 0) {
+  <div >
+    <div class="d-flex ms-1 me-1 mb-3 image-preview">
+      @for (imagePreview of imagePreviewArray; track imagePreview; let i =
+      $index) {
+      <div class="me-3">
+        <img [src]="getPreviewSource(imageArray[i], imagePreview)" [alt]="imageArray[i]" [ngClass]="{'image-size': !isPdf(imageArray[i])}"/>
+        <div>
+          <span> {{ imageArray[i].name }}</span>
+        </div>
+        <button
+          class="btn btn-danger"
+          type="button"
+          (click)="deleteImagePreview(i)"
+        >
+          Löschen
+        </button>
+      </div>
+      }
+    </div>
+  </div>
+  }
+</div>
+
+<hr>
+<div>
+  @if(uploadPath.length > 0) {
+  <p>Bereits vorhandene Dateien</p>
+  <div class="d-flex w-100 ms-1 me-1 mb-3 image-preview">
+    @for (image of uploadPath; track image; let i = $index) {
+    <div class="me-3 ">
+      @if (isPdf(image)) { 
+        <img src="../../../../assets/icons/pdf.png" [alt]="image"   />
+        <div>
+          <span> {{ modifiyPDFName(image) }}</span>
+        </div>
+      }
+      @else {
+        <img src="{{image}}" [alt]="image" class="d-flex flex-column" [ngClass]="{'image-size': !isPdf(image)}"/>
+      }
+
+      <button
+        class="btn btn-danger"
+        type="button"
+        (click)="deleteUploadImage(i, image)"
+      >
+        Löschen
+      </button>
+    </div>
+    }
+  </div>
+  }
+</div>

@@ -1,0 +1,204 @@
+<div class="container">
+  <div class="bg-body-tertiary py-3 mb-4  responsive-dialog">
+    <div class="text-center">
+      <h1>
+        Willkommen bei
+        <img
+          class="me-1 ms-1 logo"
+          src="../../../../../assets/img/logo_grau.jpg"
+          alt="waste-connect.de-Logo"
+        />
+        waste-connect.de
+      </h1>
+      <h2>
+        Du hast gerade deinen Account erstellt und besuchst nun zum ersten Mal
+        unsere Webseite als Teil der waste-connect.de-Community.
+      </h2>
+      <p>
+        Um selbst neue Inserate erstellen zu können, musst du noch das folgende
+        Formular ausfüllen. Mit * markierte Felder sind <u>Pflichtfelder</u>.
+        Nur so können andere Firmen auf deine Inserate aufmerksam werden und
+        erfolgreich den Kontakt zu dir herstellen. Jegliche Kommunikation mit
+        anderen Firmen hast du selbst in der Hand. Wir sind dafür da euch zu
+        verbinden!
+      </p>
+    </div>
+
+    <form [formGroup]="profilForm" (submit)="saveProfil()">
+      <mat-form-field class="w-100">
+        <mat-label>Ansprechpartner</mat-label>
+        <input
+          id="inputAnsprechpartnerFirmenprofil"
+          type="text"
+          matInput
+          formControlName="ansprechpartner"
+        />
+    
+        @if(profilForm.get('ansprechpartner')!.hasError('required') &&
+        profilForm.get('ansprechpartner')!.dirty) {
+        <mat-error>Bitte gebe einen Ansprechpartner an.</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="row">
+        <mat-form-field class="w-50">
+          <mat-label>Telefonnummer</mat-label>
+          <input
+            type="text"
+            matInput
+            formControlName="telefonnummer"
+          />
+          @if(profilForm.get('telefonnummer')!.hasError('required') &&
+          profilForm.get('telefonnummer')!.dirty) {
+          <mat-error>Bitte gebe eine Telefonnummer an.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field class="w-50">
+          <mat-label>Firmenname</mat-label>
+          <input
+            id="inputFirmennameFirmenprofil"
+            type="text"
+            matInput
+            formControlName="firmenname"
+          />
+      
+          @if(profilForm.get('firmenname')!.hasError('required') &&
+          profilForm.get('firmenname')!.dirty) {
+          <mat-error>Bitte gebe einen Firmenname an.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="row">
+        <mat-form-field class="w-50">
+          <mat-label>Firmenwebseite</mat-label>
+          <input
+            id="inputFirmenwebseiteFirmenprofil"
+            type="text"
+            matInput
+            formControlName="firmenwebseite"
+          />
+        </mat-form-field>
+
+        <mat-form-field class="w-50">
+          <mat-label>Firmenadresse und Hausnummer</mat-label>
+          <input
+            id="inputFirmenadresseFirmenprofil"
+            type="text"
+            matInput
+            formControlName="firmenadresse"
+
+          />
+          @if(profilForm.get('firmenadresse')!.hasError('required') &&
+          profilForm.get('firmenadresse')!.dirty) {
+          <mat-error>Bitte gebe eine Firmenadresse an.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <mat-form-field class="w-100">
+        <mat-label>Bundesländerauswahl</mat-label>
+        <mat-select
+          formControlName="bundesland"
+          (selectionChange)="getGemeinden($event.value, '')"
+        >
+          <mat-option [value]=""></mat-option>
+  
+          @for(bundesland of bundeslaender(); track bundesland){
+          <mat-option [value]="bundesland.name">
+            {{ bundesland.name }}</mat-option
+          >
+          }
+        </mat-select>
+        @if(this.profilForm.get('bundesland')?.value === '' ||
+        this.profilForm.get('bundesland')?.value === undefined) {
+        <mat-error>Bitte wähle ein Bundesland aus.</mat-error>
+        }
+      </mat-form-field>
+
+
+
+        <mat-form-field class="w-100">
+          <mat-label>Ortsauswahl</mat-label>
+          <mat-select
+            formControlName="postleitzahl"
+            (selectionChange)="getStadt($event)"
+          >
+          <mat-option>
+            <ngx-mat-select-search
+              [formControl]="filterCtrl"
+            ></ngx-mat-select-search>
+          </mat-option>
+            <mat-option [value]=""></mat-option>
+    
+            @for(gemeinde of filteredGemeinden(); track gemeinde){
+            <mat-option [value]="gemeinde.postalCode">
+              {{ gemeinde.postalCode }}, {{ gemeinde.name }}</mat-option
+            >
+            }
+          </mat-select>
+          @if(this.profilForm.get('postleitzahl')?.value === '' ||
+          this.profilForm.get('postleitzahl')?.value === undefined) {
+          <mat-error>Bitte wähle einen Ort aus.</mat-error>
+          }
+        </mat-form-field>
+
+
+      <div class="row mb-3">
+        <!-- TODO: Bestätitigungsdialog vom Backend wird auch geschlossen, wenn der Dialog mit closeAll geschlossen wird. -->
+        <span class="">Bitte wähle nun aus, ob du ein Abfallerzeuger und / oder ein Abfallentsorger bist.</span>
+
+        <div class="d-flex">
+
+          <mat-checkbox
+          id="produzentCheckbox"
+          formControlName="produzent"
+          color="primary"
+          >Abfallerzeuger</mat-checkbox
+        >
+
+          <mat-checkbox
+            id="entsorgerCheckbox"
+            formControlName="entsorger"
+            color="primary"
+            >Abfallentsorger</mat-checkbox
+          >
+    
+          <!-- Logistiker ist vorerst ausgeschaltet -->
+          <!-- <mat-checkbox id="logistikCheckbox" formControlName="logistik" [checked]="this.profile().logistik" color="primary">Logistik</mat-checkbox> -->
+        </div>
+      </div>
+
+      <div class="mb-3 form-check col-12 d-flex align-items-center">
+
+        <p class="fs-small col-6 text-start">
+          Mit Bestätigen der Checkbox wird Ihr Profil auf privat gestellt. In
+          Ihren Inseraten werden keine Informationen über Ihre Firma angezeigt.
+          Interessenten können weiterhin über waste-Connect.de Ihnen eine Email zu
+          einem Inserat schreiben.
+        </p>
+
+        <mat-checkbox
+        id="inputPrivateProfile"
+        formControlName="private"
+        color="primary"
+        >Keine Firmendaten im Inserat anzeigen</mat-checkbox
+      >
+      </div>
+
+
+      <div class="d-grid gap-2">
+        <button
+          class="btn btn-primary"
+          color="accent"
+          type="submit"
+          [disabled]="this.profilForm.invalid"
+          mat-dialog-close="true"
+        >
+          Accountinformation aktualisieren
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

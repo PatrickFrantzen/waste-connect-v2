@@ -1,0 +1,28 @@
+Offene Aufgaben:
+
+
+/AUTH
+
+
+
+/Benutzer
+
+
+/Inserat
+
+
+/Entsorger
+
+
+/Logistiker
+//An Logistiker wird erst nach Release weiter gearbeitet
+filterLogister API
+
+/calender
+
+/Admin Panel einführen
+Waste of the Day usw freigegeben
+User verifizieren
+
+
+

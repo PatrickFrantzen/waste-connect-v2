@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>waste-connect.de</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="./assets/img/logo.jpg">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <!-- Same-origin in Produktion (siehe docs/adr/0002-single-origin-deployment.md):
+       'self' deckt API-Calls und Bilder ab, keine Cross-Origin-Ausnahmen mehr
+       nötig. localhost:3000/4200-Einträge nur für die lokale Entwicklung
+       (ng serve + Nest getrennt). -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    connect-src 'self' http://localhost:3000 ws://localhost:4200;
+    script-src 'self' 'unsafe-inline';
+    img-src 'self' data: http://localhost:3000;
+    style-src 'self' 'unsafe-inline';
+    font-src 'self';">
+</head>
+<body class="mat-typography">
+  <app-root></app-root>
+</body>
+</html>

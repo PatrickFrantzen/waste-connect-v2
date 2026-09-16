@@ -1,0 +1,60 @@
+.card-img-top {
+  width: 25vw;
+  height: 30vh;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 2px 2px 2px rgba($color: #000000, $alpha: 0.5);
+  // margin: 16px 0px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 25vh;
+  }
+}
+
+.inserate-image {
+  width: 15%;
+
+  img {
+    width: 100%;
+    box-shadow: 5px 5px 16px rgba($color: white, $alpha: 0.8);
+  }
+}
+
+.font-avv {
+  font-size: 1.2rem;
+}
+
+p {
+  font-size: 16px;
+}
+
+.beschreibung {
+  min-height: 75px;
+}
+
+.wasteoftheDay {
+  position: relative;
+  overflow: hidden;
+  box-shadow: 12px 6px 8px #29954d79;
+  background-color: #d7c1a528;
+}
+
+.background-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 50%;
+  height: 50%;
+  background-image: url(../../../assets/img/logo_transparent.png);
+  background-repeat: no-repeat;
+  background-size: contain; /* or contain, depending on the desired effect */
+  background-position: right;
+  filter: blur(3px);
+  z-index: 1; /* Make sure the overlay is behind the content */
+}
+
+.wasteoftheDay > *:not(.background-overlay) {
+  position: relative;
+  z-index: 2; /* Make sure the content is in front of the overlay */
+}

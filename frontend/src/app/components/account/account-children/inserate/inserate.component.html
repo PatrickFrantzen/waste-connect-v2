@@ -1,0 +1,160 @@
+<div class="container">
+  <div class="row mt-3 justify-content-center">
+    @if(accountSignal.userInserateForDisplay().length > 0) {
+      @for(inserat of accountSignal.userInserateForDisplay(); track inserat._id) {
+        <div
+          class="card mb-3 flex-column"
+          >
+          <div class="m-3">
+            <span class="font-bezeichnung">{{ inserat.inseratBeschreibung.abfallbezeichnung }},</span
+              ><span class="font-avv">AVV: {{ inserat.inseratBeschreibung.abfallschluesselnummer }}</span>
+            </div>
+            <div class="d-flex ms-3 me-3">
+              <div>
+                @if (inserat.inseratFilepath.bildpath && inserat.inseratFilepath.bildpath.length > 0) {
+                  <img
+                    class="card-img-top"
+                    [src]="inserat.inseratFilepath.bildpath[0]"
+                    [alt]="inserat.inseratBeschreibung.beschreibung"
+                    />
+                  } @else {
+                    <img
+                      class="card-img-top"
+                      src="../../../../assets/img/placeholder.png"
+                      alt="Kein Bild vorhanden"
+                      />
+                    }
+                  </div>
+                  <div class="ms-3 w-100">
+                    <p class="beschreibung">
+                      <b>Abfallbeschreibung:</b> {{ inserat.inseratBeschreibung.beschreibung }}
+                    </p>
+                    <hr />
+                    <p><b>Menge:</b> {{ inserat.inseratBeschreibung.abfallmenge }} {{ inserat.inseratBeschreibung.einheit }}</p>
+                    <div class="d-flex">
+                      <p class="me-1">
+                        <b>Intervall:</b> {{ inserat.inseratBeschreibung.intervall.intervallOption }}
+                      </p>
+                      @if (
+                        inserat.inseratBeschreibung.intervall.intervallOption == 'Zeitraum' &&
+                        inserat.inseratBeschreibung.intervall.dateStart
+                        ) {
+                        <p
+                          class="me-1"
+                          >
+                          vom {{ inserat.inseratBeschreibung.intervall.dateStart | date : " dd.MM.yyyy" }}
+                        </p>
+                      }
+
+                      @if (
+                        inserat.inseratBeschreibung.intervall.intervallOption == 'Zeitraum' &&
+                        inserat.inseratBeschreibung.intervall.dateEnd
+                        ) {
+                        <p
+                          >
+                          bis zum{{ inserat.inseratBeschreibung.intervall.dateEnd | date : " dd.MM.yyyy" }}
+                        </p>
+                      }
+                    </div>
+                    <hr />
+                    <p><b>Standort:</b> {{ inserat.inseratStandort.standort_Bundesland }}</p>
+                    <p><b>Logistik:</b> {{ inserat.inseratLogistik.logistik }}</p>
+                    <p><b>Lagerform:</b> {{ inserat.inseratLogistik.verpackung }}</p>
+                    <p><b>Art der Verladung:</b> {{ inserat.inseratLogistik.verladung }}</p>
+                  </div>
+                </div>
+                <hr />
+                <div class="ms-3">
+                  @if(inserat.inseratErsteller?.privateModus) {
+                    <p>Erstellt von: "Privat"</p>
+
+                  } @else {
+                    <p>
+                      Erstellt von: {{ inserat.inseratErsteller?.firma }},
+                      {{ inserat.inseratErsteller?.adresse }}
+                    </p>
+                  }
+                </div>
+                <div class="icon-area mb-1">
+                  <img
+                    class="cursor-pointer icon hoverIcon"
+                    src="../../../../../assets/icons/edit.png"
+
+                    (click)="inseratBearbeiten(inserat)"
+                    matTooltip="Inserat bearbeiten"
+                    />
+                    <img
+                      class="cursor-pointer icon hoverIcon"
+                      src="../../../../../assets/icons/delete.png"
+                      (click)="deleteInserat(inserat._id!)"
+                      matTooltip="Inserat löschen"
+
+                      />
+                      <img
+                        class="cursor-pointer icon hoverIcon"
+                        src="../../../../../assets/icons/diamond.png"
+                        (click)="registerWasteOfTheDay(inserat!)"
+                        matTooltip="Waste of the Day"
+                        />
+                      </div>
+                    </div>
+                  }
+
+                } @else {
+                  <div class="card mb-3 w-rem-50">
+                    <div class="card-body">
+                      <h2 class="card-title">
+                        Du hast bisher keine eigenen Inserate erstellt.
+                      </h2>
+                      <div class="card-text">
+                        <p>Erstelle jetzt dein erstes Inserat!</p>
+                        <button
+                          class="btn btn-primary mb-3"
+                          (click)="navigateToInseratErstellen()"
+                          >
+                          Neues Inserat erstellen
+                        </button>
+                      </div>
+                      <p>
+                        Falls du beim Erstellen deines Inserates Hilfe benötigst, wende dich
+                        gerne an uns:
+                      </p>
+
+                      <form [formGroup]="nachrichtForm" (submit)="absenden()">
+                        <div class="mb-3 form-floating form-group">
+                          <input
+                            id="betreff"
+                            matInput
+                            type="text"
+                            placeholder="Betreff"
+                            formControlName="betreff"
+                            class="form-control"
+                            />
+                            <label for="betreff">Betreff:</label>
+                          </div>
+
+                          <div class="mb-3 form-floating form-group">
+                            <textarea
+                              id="nachricht"
+                              matInput
+                              type="text"
+                              placeholder="Nachricht"
+                              formControlName="nachricht"
+                              class="form-control"
+                            ></textarea>
+                            <label for="nachricht">Nachricht:</label>
+                          </div>
+
+                          <button
+                            class="btn btn-primary"
+                            type="submit"
+                            [disabled]="nachrichtForm.invalid"
+                            >
+                            Absenden
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>

@@ -1,0 +1,76 @@
+<div class="container">
+  <div class="bg-body-tertiary py-3 mb-4">
+    @if (loginMode) {
+      <div>
+        <label>Login</label>
+        <form [formGroup]="loginForm" (submit)="login()">
+          <div class="mb-3 form-floating form-group">
+            <input
+              id="inputEmail"
+              matInput
+              type="email"
+              placeholder="E-Mail"
+              formControlName="email"
+              class="form-control"
+              />
+              <label for="inputEmail">Email</label>
+            </div>
+            @if (
+              this.loginForm.get('email')!.invalid &&
+              this.loginForm.get('email')!.touched
+              ) {
+              <span
+                class="mb-3 text-danger"
+                >Bitte geben Sie eine gültige Emailadresse ein</span
+                >
+            }
+            <div class="flex flex-column mb-3 form-floating form form-group">
+              <input
+                id="inputPassword"
+                matInput
+                type="password"
+                placeholder="Passwort"
+                formControlName="password"
+                class="form-control"
+                />
+                <label for="inputPassword">Passwort</label>
+              </div>
+              @if (
+                this.loginForm.get('password')!.invalid &&
+                this.loginForm.get('password')!.touched
+                ) {
+                <span
+                  class="mb-3 text-danger"
+                  >Geben Sie mindestens 8 Zeichen ein</span
+                  >
+              }
+              <div class="d-grid gap-2 mt-3">
+                <button class="btn btn-primary" color="accent" type="submit" [disabled]="this.loginForm.invalid">
+                  Login
+                </button>
+                <button class="btn btn-primary" type="button" routerLink="/signup">
+                  Account erstellen
+                </button>
+                <button class="btn btn-danger" type="button" routerLink="/resetpassword">
+                  Passwort vergessen
+                </button>
+              </div>
+            </form>
+          </div>
+        }
+
+        @if (!loginMode) {
+          <div class="d-flex flex-column align-items-center">
+            <label>Bestätige nun bitte deine Emailadresse</label>
+            <button
+              class="btn btn-primary mt-3"
+              color="accent"
+              type="button"
+              (click)="confirmEmail()"
+              >
+              Email bestätigen
+            </button>
+          </div>
+        }
+      </div>
+    </div>

@@ -1,0 +1,18 @@
+.image-preview {
+    // width: 150px;
+    margin: 1rem 1rem;
+    display: flex;
+    overflow: auto;
+
+  }
+
+ .image-size {
+  width: 200px;
+  height: 200px;
+  margin: 1rem 1rem;
+ }
+
+ .pdf-size {
+  height: unset;
+  width: 100px;
+ }

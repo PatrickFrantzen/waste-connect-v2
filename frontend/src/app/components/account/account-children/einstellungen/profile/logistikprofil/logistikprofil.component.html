@@ -1,0 +1,234 @@
+<!-- 
+<form
+[formGroup]="changeLogistikForm"
+(submit)="changeLogistikProfile()"
+*ngIf="logistikProfil"
+>
+<div class="mb-3 form-group form-floating">
+  <input
+    id="ansprechpartner"
+    matInput
+    type="text"
+    placeholder="Ansprechpartner"
+    formControlName="ansprechpartner"
+    class="form-control"
+  />
+  <label for="ansprechpartner">Ansprechpartner</label>
+
+  <span
+    class="mb-3 text-danger"
+    *ngIf="
+      this.changeLogistikForm.get('ansprechpartner')!.invalid &&
+      this.changeLogistikForm.get('ansprechpartner')!.touched
+    "
+    >Bitte geben Sie den Ansprechpartner ein.</span
+  >
+</div>
+
+<div class="mb-3 form-group form-floating">
+  <input
+    id="email"
+    matInput
+    type="email"
+    placeholder="Email"
+    formControlName="email"
+    class="form-control"
+  />
+  <label for="email">Email</label>
+
+  <span
+    class="mb-3 text-danger"
+    *ngIf="
+      this.changeLogistikForm.get('email')!.invalid &&
+      this.changeLogistikForm.get('email')!.touched
+    "
+    >Bitte geben Sie eine gültige Email-Adresse ein.</span
+  >
+</div>
+
+<div class="mb-3 form-group form-floating">
+  <input
+    id="telefonnummer"
+    matInput
+    type="tel"
+    placeholder="Telefonnummer"
+    formControlName="telefonnummer"
+    class="form-control"
+  />
+  <label for="telefonnummer">Telefonnummer</label>
+
+  <span
+    class="mb-3 text-danger"
+    *ngIf="
+      this.changeLogistikForm.get('telefonnummer')!.invalid &&
+      this.changeLogistikForm.get('telefonnummer')!.touched
+    "
+  >
+    Bitte geben Sie eine gültige Telefonnummer ein.
+  </span>
+</div>
+
+<div class="mb-3 form-group form-floating">
+  <input
+    id="befoerderernummer"
+    matInput
+    type="text"
+    placeholder="Beförderernummer"
+    formControlName="befoerderernummer"
+    class="form-control"
+  />
+  <label for="telefonnummer">Beförderernummer</label>
+
+  <span
+    class="mb-3 text-danger"
+    *ngIf="
+      this.changeLogistikForm.get('telefonnummer')!.invalid &&
+      this.changeLogistikForm.get('telefonnummer')!.touched
+    "
+  >
+    Bitte geben Sie eine gültige Telefonnummer ein.
+  </span>
+</div>
+
+<app-image-upload
+  inputId="logo"
+  label="Firmenlogo und Bilder"
+  [imageArray]="bildArray"
+  [uploadPath]="logoPath"
+  (imagePicked)="onFilePicked($event, 'logo')"
+  (imageDeleted)="deleteFilePreview($event, 'logo')"
+  (uploadPathDeleted)="deleteUploadPath($event, 'logoUpload')"
+></app-image-upload>
+
+<app-image-upload
+  inputId="zertifikate"
+  label="Zertifikate"
+  [imageArray]="zertifikateArray"
+  [uploadPath]="zertifikatePath"
+  (imagePicked)="onFilePicked($event, 'zertifikate')"
+  (imageDeleted)="deleteFilePreview($event, 'zertifikate')"
+  (uploadPathDeleted)="
+    deleteUploadPath($event, 'zertifikateUpload')
+  "
+></app-image-upload>
+
+<app-image-upload
+  inputId="genehmigungen"
+  label="Genehmigungen"
+  [imageArray]="genehmigungenArray"
+  [uploadPath]="genehmigungenPath"
+  (imagePicked)="onFilePicked($event, 'genehmigungen')"
+  (imageDeleted)="deleteFilePreview($event, 'genehmigungen')"
+  (uploadPathDeleted)="
+    deleteUploadPath($event, 'genehmigungenUpload')
+  "
+></app-image-upload>
+
+@for(field of formFieldsSelectLogistik; track field; let i = $index) {
+<div class="mb-3 form-group form-floating d-flex">
+  <mat-select
+    id="{{ field.id }}"
+    formControlName="{{ field.formControlName }}"
+    class="form-control"
+    multiple
+    (selectionChange)="
+      updateFormFieldSelectOptions($event, field.formControlName)
+    "
+  >
+    @for(option of field.auswahlfelder; track option; let i =
+    $index) {
+    <mat-option [value]="option">
+      {{ option }}
+    </mat-option>
+    }
+  </mat-select>
+  <label for="{{ field.id }}">{{ field.placeholder }}</label>
+</div>
+
+} @for(field of formFieldsInputLogistik; track field; let i = $index) {
+<div class="mb-3 form-group form-floating d-flex">
+  <input
+    id="{{ field.id }}"
+    matInput
+    type="text"
+    placeholder="{{ field.placeholder }}"
+    formControlName="{{ field.formControlName }}"
+    class="form-control"
+  />
+  <label for="{{ field.id }}">{{ field.placeholder }}</label>
+
+  <div class="d-grid gap-2 ms-1 d-flex">
+    <button
+      class="btn btn-primary"
+      color="accent"
+      type="button"
+      (click)="addToList(field.formControlName)"
+      [disabled]="
+        this.changeLogistikForm.get(field.formControlName)!
+          .invalid ||
+        this.changeLogistikForm.get(field.formControlName)!
+          .value === ''
+      "
+    >
+      Hinzufügen
+    </button>
+    <img
+      class="help-icon gap-1"
+      src="../../../../assets/icons/help.png"
+      matTooltip="{{ field.tooltip }}"
+    />
+  </div>
+</div>
+
+<div
+  *ngIf="getArrayBasedOnBereich(field.formControlName).length > 0"
+>
+  <p>Ausgewählte {{ field.placeholder }}</p>
+  @for( item of getArrayBasedOnBereich(field.formControlName);
+  track item; let i = $index) {
+  <ul>
+    <div class="d-flex align-items-center">
+      <li class="minWidth">{{ item }}</li>
+      <button
+        class="btn btn-danger ms-3 padding"
+        (click)="
+          deleteTaetigkeitsbereich(i, field.formControlName)
+        "
+      >
+        x
+      </button>
+    </div>
+  </ul>
+  }
+</div>
+}
+
+<div class="mb-3 form-group form-floating">
+  <button
+    class="btn btn-primary"
+    type="button"
+    (click)="openDialog()"
+  >
+    Auswahl der AVV-Nummern
+  </button>
+</div>
+
+<div class="mb-3 form-group form-floating">
+  <textarea
+    formControlName="besonderheiten"
+    class="form-control"
+    id="besonderheiten"
+    placeholder="Ausführliche Beschreibung zu Besonderheiten deines Unternehmens"
+  ></textarea>
+  <label for="besonderheiten"
+    >Ausführliche Beschreibung von Besonderheiten</label
+  >
+</div>
+
+<div class="d-grid gap-2">
+  <button class="btn btn-primary" color="accent" type="submit">
+    Logistikprofil aktualisieren
+  </button>
+</div>
+</form>
+ -->

@@ -1,0 +1,107 @@
+<div
+  class="card mb-3 cursor-pointer flex-column"
+  [ngClass]="{ wasteoftheDay: wasteOfTheDay }"
+  (click)="openInseratDialog(inserat)"
+  >
+  @if (wasteOfTheDay){
+    <div class="background-overlay"></div>
+    <h2 class="text-center mt-1">Waste of the Day!</h2>
+  }
+
+  <div class="m-3">
+    <span class="font-bezeichnung">{{
+      inserat.inseratBeschreibung.abfallbezeichnung
+      }}</span
+      >,
+      <span class="font-avv">
+        AVV:{{ inserat.inseratBeschreibung.abfallschluesselnummer }}</span
+        >
+      </div>
+      <div class="d-flex ms-3 me-3">
+        @defer () {
+        <div>
+          @if (inserat.inseratFilepath.bildpath &&
+            inserat.inseratFilepath.bildpath.length > 0) {
+            <img
+              class="card-img-top"
+              [src]="inserat.inseratFilepath.bildpath[0]"
+              [alt]="inserat.inseratBeschreibung.beschreibung"
+              />
+            } @else {
+              <img
+                class="card-img-top"
+                src="../../../assets/img/placeholder.png"
+                alt="Kein Bild vorhanden"
+                />
+              }
+            </div>
+            } @loading (after 1s; minimum 2s) {
+            <img
+              class="card-img-top"
+              src="../../../assets/img/placeholder.png"
+              alt="Kein Bild vorhanden"
+              />
+            }
+
+            <div class="ms-3 w-100">
+              <p class="beschreibung">
+                <b>Abfallbeschreibung:</b>
+                {{ inserat.inseratBeschreibung.beschreibung }}
+              </p>
+              <hr />
+              <p>
+                <b>Menge:</b> {{ inserat.inseratBeschreibung.abfallmenge }}
+                {{ inserat.inseratBeschreibung.einheit }}
+              </p>
+              <div class="d-flex">
+                <p class="me-1">
+                  <b>Intervall:</b>
+                  {{ inserat.inseratBeschreibung.intervall.intervallOption }}
+                </p>
+                @if (
+                  inserat.inseratBeschreibung.intervall.intervallOption ==
+                  'Zeitraum' && inserat.inseratBeschreibung.intervall.dateStart
+                  ) {
+                  <p
+                    class="me-1"
+                    >
+                    vom
+                    {{
+                    inserat.inseratBeschreibung.intervall.dateStart
+                    | date : " dd.MM.yyyy"
+                    }}
+                  </p>
+                }
+
+                @if (
+                  inserat.inseratBeschreibung.intervall.intervallOption ==
+                  'Zeitraum' && inserat.inseratBeschreibung.intervall.dateEnd
+                  ) {
+                  <p
+                    >
+                    bis zum{{
+                    inserat.inseratBeschreibung.intervall.dateEnd | date : " dd.MM.yyyy"
+                    }}
+                  </p>
+                }
+              </div>
+              <hr />
+              <p><b>Standort:</b> {{ inserat.inseratStandort.standort_Bundesland }}</p>
+              <p><b>Logistik:</b> {{ inserat.inseratLogistik.logistik }}</p>
+              <p><b>Lagerform:</b> {{ inserat.inseratLogistik.verpackung }}</p>
+              <p><b>Art der Verladung:</b> {{ inserat.inseratLogistik.verladung }}</p>
+            </div>
+          </div>
+          <hr />
+          <div class="ms-3">
+            @if(inserat.inseratErsteller!.privateModus) {
+              <p>
+                Erstellt von einem Abfallerzeuger, kontaktierbar über das Email-Symbol in
+                der Detailansicht. Einfach hier klicken.
+              </p>
+
+            } @else {
+              <p>Erstellt von: {{ inserat.inseratErsteller!.firma }}</p>
+            }
+          </div>
+        </div>

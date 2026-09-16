@@ -1,0 +1,25 @@
+<!-- Waste of the Day -->
+@if (wasteOfTheDaySignal() !== null) {
+<app-inserat-template
+  [inserat]="wasteOfTheDaySignal()!"
+  [wasteOfTheDay]="true"
+></app-inserat-template>
+}
+
+<!-- Bereich der Inserate -->
+@if(this.filterInserateSignal().inserate.length > 0) { @for(inserat of
+this.filterInserateSignal().inserate; track inserat._id) {
+<app-inserat-template
+  [inserat]="inserat"
+  [wasteOfTheDay]="false"
+></app-inserat-template>
+
+} } @if(this.filterInserateSignal().inserate.length > 0) {
+<mat-paginator
+  [length]="filterInserateSignal().totalInserate"
+  [pageSize]="pageSizeSignal()"
+  [pageSizeOptions]="pageSizeOptions"
+  (page)="onChangePage($event)"
+>
+</mat-paginator>
+}

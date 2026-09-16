@@ -1,0 +1,26 @@
+.container {
+    overflow-y: auto;
+    max-height: 100vh;
+}
+
+.responsive-dialog{
+    @media screen and (max-width: 768px) { // Bootstrap Breakpoint
+        height: 90vh;
+        overflow: auto;
+    }
+}
+
+.row {
+    @media screen and (max-width: 768px) { // Bootstrap Breakpoint
+        margin-left: unset;
+        margin-right: unset;
+    }
+}
+
+.form-floating >label {
+    margin-left: 5px;
+}
+
+.logo {
+    width: 50px;
+  }

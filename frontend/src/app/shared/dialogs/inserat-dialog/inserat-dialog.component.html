@@ -1,0 +1,376 @@
+<div class="container">
+  <div class="bg-body-tertiary">
+    <div class="d-flex justify-content-end align-items-center p-2">
+      <button
+        class="btn btn-primary close-button"
+        type="button"
+        (click)="closeDialog()"
+        >
+        Schließen
+      </button>
+    </div>
+    <div class="card mb-3 flex-column">
+      <div class="m-3 d-flex justify-content-between">
+        <div>
+          <span class="font-bezeichnung">{{
+            inserat.inseratBeschreibung.abfallbezeichnung
+            }}</span
+            >,
+            <span class="font-avv"
+              >AVV: {{ inserat.inseratBeschreibung.abfallschluesselnummer }}</span
+              >
+            </div>
+            <div>
+              @if (inserat.inseratFilepath.analysepath &&
+                inserat.inseratFilepath.analysepath.length == 1) {
+                <b>Analyse:</b>
+                <img
+                  class="cursor-pointer icon ms-1"
+                  src="../../../../assets/icons/pdf.png"
+                  alt="PDF-Bild der Analyse"
+            matTooltip="Analyse '{{
+              inserat.inseratFilepath.analysepath[0] | dateinamen
+            }}' ansehen"
+            (click)="
+              openPdfViewer(
+                inserat._id!,
+                inserat.inseratFilepath.analysepath[0]
+              )
+            "
+                  />
+                } @else if(inserat.inseratFilepath.analysepath &&
+                  inserat.inseratFilepath.analysepath.length > 1){
+                  <b>Analysen:</b>
+                  @for(analyse of inserat.inseratFilepath.analysepath; track
+                    inserat._id) {
+                    <img
+                      class="cursor-pointer icon ms-1"
+                      src="../../../../assets/icons/pdf.png"
+                      alt="PDF-Bild der Analyse"
+                      matTooltip="Analyse '{{ analyse | dateinamen }}' ansehen"
+                      (click)="openPdfViewer(inserat._id!, analyse)"
+                      />
+                      } }
+                    </div>
+                  </div>
+                  <div class="d-flex ms-3 me-3">
+                    <div>
+                      @if (showEmailForm) {
+                        @if(!token){
+                          <div class="emailForm">
+                            <p><b>Interesse geweckt?</b></p>
+                            <p>Schicke direkt eine Email:</p>
+                            <form
+                              [formGroup]="nachrichtFromUnknownForm"
+                              (submit)="sendEmailFromUnknown(inserat)"
+                              class="mb-3"
+                              >
+                              <div class="mb-3 form-floating form-group">
+                                <input
+                                  id="email"
+                                  matInput
+                                  type="text"
+                                  placeholder="Deine E-Mail"
+                                  formControlName="email"
+                                  class="form-control"
+                                  />
+                                  <label for="email">Deine Email:</label>
+                                </div>
+
+                                <div class="mb-3 form-floating form-group">
+                                  <input
+                                    id="telefon"
+                                    matInput
+                                    type="text"
+                                    placeholder="Deine Telefonnummer (optional)"
+                                    formControlName="telefon"
+                                    class="form-control"
+                                    />
+                                    <label for="email">Deine Telefonnummer (optional):</label>
+                                  </div>
+
+                                  <div class="mb-3 form-floating form-group">
+                                    <input
+                                      id="betreff"
+                                      matInput
+                                      type="text"
+                                      placeholder="Betreff"
+                                      formControlName="betreff"
+                                      class="form-control"
+                                      />
+                                      <label for="betreff">Betreff:</label>
+                                    </div>
+
+                                    <div class="mb-3 form-floating form-group">
+                                      <textarea
+                                        id="nachricht"
+                                        matInput
+                                        type="text"
+                                        placeholder="Nachricht"
+                                        formControlName="nachricht"
+                                        class="form-control"
+                                      ></textarea>
+                                      <label for="nachricht">Nachricht:</label>
+                                    </div>
+                                    <button
+                                      class="btn btn-primary"
+                                      type="submit"
+                                      [disabled]="nachrichtFromUnknownForm.invalid"
+                                      >
+                                      E-Mail senden
+                                    </button>
+                                  </form>
+                                </div>
+                              } @else if(token) {
+                                <div class="emailForm">
+                                  <p><b>Interesse geweckt?</b></p>
+                                  <p>Schicke direkt eine Email an den Inseratersteller:</p>
+                                  <form
+                                    [formGroup]="nachrichtFromKnownForm"
+                                    (submit)="sendEmailFromKnown(inserat)"
+                                    class="mb-3"
+                                    >
+                                    <div class="mb-3 form-floating form-group">
+                                      <input
+                                        id="betreff"
+                                        matInput
+                                        type="text"
+                                        placeholder="Betreff"
+                                        formControlName="betreff"
+                                        class="form-control"
+                                        />
+                                        <label for="betreff">Betreff:</label>
+                                      </div>
+
+                                      <div class="mb-3 form-floating form-group">
+                                        <textarea
+                                          id="nachricht"
+                                          matInput
+                                          type="text"
+                                          placeholder="Nachricht"
+                                          formControlName="nachricht"
+                                          class="form-control"
+                                        ></textarea>
+                                        <label for="nachricht">Nachricht:</label>
+                                      </div>
+                                      <button
+                                        class="btn btn-primary mb-3"
+                                        type="submit"
+                                        [disabled]="nachrichtFromKnownForm.invalid"
+                                        >
+                                        E-Mail senden
+                                      </button>
+                                    </form>
+                                  </div>
+                                }
+
+                                <!-- } @else if (!inserat.inseratErsteller?.privateModus && token) {
+                                <div class="emailForm">
+                                  <p><b>Interesse geweckt?</b></p>
+                                  <p>Schicke direkt eine Email an den Inseratersteller:</p>
+                                  <form
+                                    [formGroup]="nachrichtFromKnownForm"
+                                    (submit)="sendEmailFromKnown(inserat)"
+                                    class="mb-3"
+                                    >
+                                    <div class="mb-3 form-floating form-group">
+                                      <input
+                                        id="betreff"
+                                        matInput
+                                        type="text"
+                                        placeholder="Betreff"
+                                        formControlName="betreff"
+                                        class="form-control"
+                                        />
+                                        <label for="betreff">Betreff:</label>
+                                      </div>
+
+                                      <div class="mb-3 form-floating form-group">
+                                        <textarea
+                                          id="nachricht"
+                                          matInput
+                                          type="text"
+                                          placeholder="Nachricht"
+                                          formControlName="nachricht"
+                                          class="form-control"
+                                        ></textarea>
+                                        <label for="nachricht">Nachricht:</label>
+                                      </div>
+                                      <button
+                                        class="btn btn-primary mb-3"
+                                        type="submit"
+                                        [disabled]="nachrichtFromKnownForm.invalid"
+                                        >
+                                        E-Mail senden
+                                      </button>
+                                    </form>
+                                  </div>
+                                  } -->
+                                  @if (!inserat.inseratErsteller?.privateModus) {
+                                    <div class="mt-3">
+                                      <p>Sende eine Email mit deinem Emailprogramm:</p>
+                                      <button
+                                        class="btn btn-primary"
+                                        type="button"
+                                        (click)="sendEmailViaOutlook(inserat)"
+                                        >
+                                        E-Mail mit Outlook senden
+                                      </button>
+                                    </div>
+                                  }
+                                } @else { @if (inserat.inseratFilepath.bildpath &&
+                                  inserat.inseratFilepath.bildpath.length === 1) {
+                                  <img
+                                    class="card-img-top"
+                                    [src]="inserat.inseratFilepath.bildpath[0]"
+                                    [alt]="inserat.inseratBeschreibung.abfallbezeichnung"
+                                    />
+                                  } @else if(inserat.inseratFilepath.bildpath &&
+                                    inserat.inseratFilepath.bildpath.length > 1) {
+                                    <div class="image-container">
+                                      <img class="card-img-top" [src]="images![currentImageIndex]" />
+
+                                      <img
+                                        class="arrow left-arrow"
+                                        src="../../../../assets/icons/left-arrow.png"
+                                        (click)="previousImage()"
+                                        />
+
+                                        <img
+                                          class="arrow right-arrow"
+                                          src="../../../../assets/icons/right-arrow.png"
+                                          (click)="nextImage()"
+                                          />
+                                        </div>
+                                      } @else {
+                                        <img
+                                          class="card-img-top"
+                                          src="../../../../assets/img/placeholder.png"
+                                          alt="Kein Bild vorhanden"
+                                          />
+                                          } }
+                                        </div>
+                                        <div class="ms-3 w-100">
+                                          <p class="beschreibung">
+                                            <b>Abfallbeschreibung:</b>
+                                            {{ inserat.inseratBeschreibung.abfallbezeichnung }}
+                                          </p>
+                                          <hr />
+                                          <p>
+                                            <b>Menge:</b> {{ inserat.inseratBeschreibung.abfallmenge }}
+                                            {{ inserat.inseratBeschreibung.einheit }}
+                                          </p>
+                                          <div class="d-flex">
+                                            <p class="me-1">
+                                              <b>Intervall:</b>
+                                              {{ inserat.inseratBeschreibung.intervall.intervallOption }}
+                                            </p>
+                                            @if (
+                                              inserat.inseratBeschreibung.intervall.intervallOption ==
+                                              'Zeitraum' && inserat.inseratBeschreibung.intervall.dateStart
+                                              ) {
+                                              <p
+                                                class="me-1"
+                                                >
+                                                vom
+                                                {{
+                                                inserat.inseratBeschreibung.intervall.dateStart
+                                                | date : " dd.MM.yyyy"
+                                                }}
+                                              </p>
+                                            }
+
+                                            @if (
+                                              inserat.inseratBeschreibung.intervall.intervallOption ==
+                                              'Zeitraum' && inserat.inseratBeschreibung.intervall.dateEnd
+                                              ) {
+                                              <p
+                                                >
+                                                bis zum{{
+                                                inserat.inseratBeschreibung.intervall.dateEnd
+                                                | date : " dd.MM.yyyy"
+                                                }}
+                                              </p>
+                                            }
+                                          </div>
+                                          <hr />
+                                          <p>
+                                            <b>Standort:</b> {{ inserat.inseratStandort.standort_Bundesland }},
+                                            {{ inserat.inseratStandort.standort_Postleitzahl }}
+                                            {{ inserat.inseratStandort.standort_Gemeinde }}
+                                          </p>
+                                          <p><b>Logistik:</b> {{ inserat.inseratLogistik.logistik }}</p>
+                                          <p><b>Lagerform:</b> {{ inserat.inseratLogistik.verpackung }}</p>
+                                          <p>
+                                            <b>Art der Verladung:</b> {{ inserat.inseratLogistik.verladung }}
+                                          </p>
+                                        </div>
+                                      </div>
+                                      <hr />
+                                      <div class="ms-3 me-3 d-flex justify-content-between align-items-center">
+                                        <div>
+                                          @if(inserat.inseratErsteller?.privateModus) {
+                                            <span
+                                              >Erstellt von einem Abfallerzeuger. Kontakierbar über das
+                                              Email-Symbol.</span
+                                              >
+
+                                            } @else {
+                                              <span>
+                                                Erstellt von: {{ inserat.inseratErsteller?.firma }},
+                                                {{ inserat.inseratErsteller?.adresse }}
+                                              </span>
+                                            }
+                                          </div>
+                                          <div class="icon-area mb-1 d-flex">
+                                            @if (this.erstellerWebsite.value !== null) {
+                                              <img
+                                                class="cursor-pointer icon hoverIcon"
+                                                src="../../../../assets/icons/webseite.png"
+                                                alt="Teilen"
+                                                [matTooltip]="inserat.inseratErsteller?.webseite!"
+                                                (click)="openWebsite()"
+                                                />
+                                            }
+                                            <img
+                                              class="cursor-pointer icon hoverIcon"
+                                              src="../../../../assets/icons/phone.png"
+                                              alt="Teilen"
+                                              [matTooltip]="inserat.inseratErsteller?.telefonnummer!"
+                                              />
+                                              <img
+                                                class="cursor-pointer icon hoverIcon"
+                                                src="../../../../assets/icons/mail.png"
+                                                alt="Teilen"
+                                                [matTooltip]="inserat.inseratErsteller?.email!"
+                                                (click)="toggleEmailForm()"
+                                                />
+                                                <img
+                                                  class="cursor-pointer icon hoverIcon"
+                                                  src="../../../../assets/icons/share.png"
+                                                  alt="Teilen"
+                                                  matTooltip="Inserat teilen"
+                                                  (click)="shareInserat(inserat)"
+                                                  />
+                                                  <img
+                                                    class="cursor-pointer icon hoverIcon"
+                                                    src="../../../../assets/icons/print.png"
+                                                    alt="Teilen"
+                                                    matTooltip="Inserat drucken"
+                                                    (click)="printInserat()"
+                                                    />
+                                                    @if(token) {
+                                                      <img
+                                                        class="cursor-pointer icon hoverIcon"
+                                                        src="../../../../assets/icons/star.png"
+                                                        alt="Merkzettel"
+                                                        matTooltip="Zum Merkzettel hinzufügen"
+                                                        (click)="toggleMerkzettel(inserat)"
+                                                        [ngClass]="{ imgColor: (merkzettelStatus | async) }"
+                                                        />
+                                                      }
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>

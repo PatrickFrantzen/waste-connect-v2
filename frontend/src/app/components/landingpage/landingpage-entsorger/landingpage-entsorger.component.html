@@ -1,0 +1,71 @@
+@if(this.filterEntsorgerSignal().entsorger.length > 0){
+<div>
+  @for(entsorger of this.filterEntsorgerSignal().entsorger; track entsorger._id) {
+  <div
+    class="card mb-3 cursor-pointer flex-column"
+    (click)="openProfilDialog(entsorger)"
+  >
+    <div class="m-3">
+      <span class="font-bezeichnung">{{ entsorger.firmendaten.firmenname }}</span>
+    </div>
+    <div class="d-flex ms-3 me-3">
+      <div>
+        @if (entsorger.entsorgerFilepath.logoPath && entsorger.entsorgerFilepath.logoPath.length > 0) {
+        <img
+          class="card-img-top"
+          [src]="entsorger.entsorgerFilepath.logoPath[0]"
+          [alt]="entsorger.entsorgerFilepath.logoPath"
+        />
+        } @else {
+        <img
+          class="card-img-top"
+          src="../../../../assets/img/placeholder.png"
+          alt="Kein Bild vorhanden"
+        />
+        }
+      </div>
+      <div class="ms-3 w-100">
+        <p class="beschreibung">
+          <b>Tätigkeiten:</b>
+          @if (entsorger.entsorgerBeschreibung.taetigkeitsbereich.length === 1) {
+          {{ entsorger.entsorgerBeschreibung.taetigkeitsbereich }} } 
+          @else if(entsorger.entsorgerBeschreibung.taetigkeitsbereich.length > 1) {
+          {{ entsorger.entsorgerBeschreibung.taetigkeitsbereich.join(", ") }} } 
+          @else{
+          {{ "Keine Angaben" }} }
+        </p>
+        <hr />
+        <p>           
+          <b>Dienstleistungen</b>
+          @if (entsorger.entsorgerBeschreibung.dienstleistungen.length === 1) {
+          {{ entsorger.entsorgerBeschreibung.dienstleistungen }} } 
+          @else if(entsorger.entsorgerBeschreibung.dienstleistungen.length > 1) {
+          {{ entsorger.entsorgerBeschreibung.dienstleistungen.join(", ") }} } 
+          @else{
+          {{ "Keine Angaben" }} }</p>
+        <p>             
+          <b>Besonderheiten:</b>
+          @if (entsorger.entsorgerBeschreibung.besonderheiten) {
+          {{ entsorger.entsorgerBeschreibung.besonderheiten }} } @else{ {{ "Keine Angaben" }} }</p>
+        <p>
+          <b>Logistik:</b>
+          @if(entsorger.entsorgerBeschreibung.logistik.length === 1) {
+          {{ entsorger.entsorgerBeschreibung.logistik }} } @else if(entsorger.entsorgerBeschreibung.logistik.length > 1) {
+          {{ entsorger.entsorgerBeschreibung.logistik.join(", ") }} } @else{ {{ "Keine Angaben" }} }</p>
+        <p><b>Standort in:</b> {{ entsorger.firmendaten.bundesland }}</p>
+      </div>
+    </div>
+    <hr />
+  </div>
+  } @if(filterEntsorgerSignal().entsorger.length > 0) {
+  <mat-paginator
+    [length]="filterEntsorgerSignal().totalEntsorger"
+    [pageSize]="pageSizeSignal()"
+    [pageSizeOptions]="pageSizeOptions"
+    (page)="onChangePage($event)"
+  >
+  </mat-paginator>
+  }
+</div>
+
+}

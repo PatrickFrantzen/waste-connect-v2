@@ -1,0 +1,135 @@
+<form [formGroup]="suchForm" (submit)="filterInserate(filterForInserate)">
+  <mat-form-field class="w-100">
+    <mat-label>Abfallursprung, z.B. 01</mat-label>
+    <mat-select
+      formControlName="abfallursprung"
+      (selectionChange)="onKategorieChange('abfallursprung')"
+      >
+      <mat-option [value]=""></mat-option>
+
+      @for(avv of allAVV1; track avv.value){
+        <mat-option [value]="avv.value">
+          {{ avv.value }}
+          @if (avv.viewValue.length > 150) {
+            {{ avv.viewValue | truncateText : 150 }}
+          } @else {
+            {{ avv.viewValue }}
+          }
+        </mat-option>
+      }
+    </mat-select>
+    @if(this.selectedValueAVV1) {
+      <p class="font-small">{{ this.selectedValueAVV1.viewValue }}</p>
+    }
+  </mat-form-field>
+
+  <mat-form-field class="w-100">
+    <mat-label
+      >Abfallschlüsselnummer, z.B. {{ suchForm.value.abfallursprung }} 02
+      03</mat-label
+      >
+      <mat-select
+        formControlName="abfallschluesselnummer"
+        (selectionChange)="onKategorieChange('abfallschluesselnummer')"
+        >
+        <mat-option [value]=""></mat-option>
+
+        @for(avv of getFilteredAVV3(); track avv.value){
+          <mat-option [value]="avv.value">
+            {{ avv.value }}
+            @if (avv.viewValue.length > 150) {
+              {{ avv.viewValue | truncateText : 150 }}
+            } @else {
+              {{ avv.viewValue }}
+            }
+          </mat-option>
+        }
+      </mat-select>
+      @if(this.selectedValueAVV3) {
+        <p class="font-small">{{ this.selectedValueAVV3.viewValue }}</p>
+      }
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Abfallbeschreibung / Stichwort</mat-label>
+      <input
+        id="abfallbezeichnung"
+        type="text"
+        matInput
+        formControlName="abfallbezeichnung"
+        />
+      </mat-form-field>
+
+      <mat-form-field class="w-100">
+        <mat-label>Bundesländerauswahl</mat-label>
+        <mat-select
+          formControlName="bundesland"
+          (selectionChange)="getGemeinden($event.value)"
+          >
+          <mat-option [value]=""></mat-option>
+
+          @for(bundesland of
+            this.filterInserateSignal().numberOfInserateByBundesland; track
+            bundesland.name){
+            <mat-option [value]="bundesland.name" [disabled]="bundesland.value == 0">
+              {{ bundesland.name }} ({{ bundesland.value }})
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="w-100">
+        <mat-label>Ortsauswahl</mat-label>
+        <mat-select
+          formControlName="postleitzahl"
+          (selectionChange)="getStadt($event)"
+          >
+          <mat-option>
+            <ngx-mat-select-search
+              [formControl]="filterCtrl"
+            ></ngx-mat-select-search>
+          </mat-option>
+          <mat-option [value]=""></mat-option>
+
+          @for(gemeinde of filteredGemeinden(); track gemeinde.name){
+            <mat-option [value]="gemeinde.postleitzahl">
+              {{ gemeinde.postleitzahl }}, {{ gemeinde.name }}</mat-option
+              >
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <div class="row">
+          <button
+            type="submit"
+            class="btn btn-primary align-self-end mb-3 button-height-35rem"
+            >
+            Angebote filtern: ({{ filterInserateSignal().numberOfInserate }})
+          </button>
+          <button
+            type="button"
+            class="btn background-beige button-height-35rem"
+            (click)="filterReset()"
+            >
+            Filter zurücksetzen
+          </button>
+        </div>
+      </form>
+
+      <div
+        class="row row-cols-2 row-cols-lg-5 g-2 g-lg-3 mt-3 justify-content-center gap-1"
+        >
+        @for (
+          bundesland of filterInserateSignal().numberOfInserateByBundesland
+          ; track
+          bundesland) {
+          <button
+            type="button"
+            class="btn btn-primary btn-sm col"
+            (click)="filterByBundesland(bundesland.name)"
+            [disabled]="bundesland.value === 0"
+            >
+            {{ bundesland.name }} {{ bundesland.value }}
+          </button>
+        }
+      </div>

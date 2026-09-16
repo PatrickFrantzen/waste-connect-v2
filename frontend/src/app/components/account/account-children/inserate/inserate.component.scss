@@ -1,0 +1,26 @@
+textarea {
+    width: 100%;
+    height: 300px !important;
+    resize: none;
+}
+
+.card-img-top {
+    width: 25vw;
+    height: 25vh;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 2px 2px 2px rgba($color: #000000, $alpha: .5);
+    margin: 16px 0px;
+
+    @media (max-width: 768px) {
+        width: 100%;
+        height: 25vh;
+    }
+}
+
+.icon {
+    width: 35px;
+    height: 35px;
+  }
+
+  

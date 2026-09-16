@@ -1,0 +1,5 @@
+select.form-select ::ng-deep option {
+    width: 250px !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

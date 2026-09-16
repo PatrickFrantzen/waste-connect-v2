@@ -1,0 +1,361 @@
+@if (entsorgerProfil()) {
+
+<form [formGroup]="changeEntsorgerForm" (submit)="changeEntsorgerProfile()">
+  <!-- <div class="mb-3 form-group form-floating">
+    <input
+      id="ansprechpartner"
+      matInput
+      type="text"
+      placeholder="Ansprechpartner"
+      formControlName="ansprechpartner"
+      class="form-control"
+      [value]="entsorgerProfil().entsorgerdaten.ansprechpartner"
+    />
+    <label for="ansprechpartner">Ansprechpartner</label>
+
+    <span
+      class="mb-3 text-danger"
+      *ngIf="
+        this.changeEntsorgerForm.get('ansprechpartner')!.invalid &&
+        this.changeEntsorgerForm.get('ansprechpartner')!.touched
+      "
+      >Bitte geben Sie den Ansprechpartner ein.</span
+    >
+  </div> -->
+
+  <!-- <div class="mb-3 form-group form-floating">
+    <input
+      id="email"
+      matInput
+      type="email"
+      placeholder="Email"
+      formControlName="email"
+      class="form-control"
+      [value]="entsorgerProfil().entsorgerdaten.email"
+    />
+    <label for="email">Email</label>
+
+    <span
+      class="mb-3 text-danger"
+      *ngIf="
+        this.changeEntsorgerForm.get('email')!.invalid &&
+        this.changeEntsorgerForm.get('email')!.touched
+      "
+      >Bitte geben Sie eine gültige Email-Adresse ein.</span
+    >
+  </div> -->
+
+  <!-- <div class="mb-3 form-group form-floating">
+    <input
+      id="telefonnummer"
+      matInput
+      type="tel"
+      placeholder="Telefonnummer"
+      formControlName="telefonnummer"
+      class="form-control"
+      [value]="entsorgerProfil().entsorgerdaten.telefonnummer"
+    />
+    <label for="telefonnummer">Telefonnummer</label>
+
+    <span
+      class="mb-3 text-danger"
+      *ngIf="
+        this.changeEntsorgerForm.get('telefonnummer')!.invalid &&
+        this.changeEntsorgerForm.get('telefonnummer')!.touched
+      "
+    >
+      Bitte geben Sie eine gültige Telefonnummer ein.
+    </span>
+  </div> -->
+
+  <mat-form-field class="w-100">
+    <mat-label>Ansprechpartner</mat-label>
+    <input
+      id="ansprechpartner"
+      type="text"
+      matInput
+      formControlName="ansprechpartner"
+      [value]="entsorgerProfil().entsorgerdaten.ansprechpartner"
+    />
+
+    @if(changeEntsorgerForm.get('ansprechpartner')!.hasError('required') &&
+    changeEntsorgerForm.get('ansprechpartner')!.dirty) {
+    <mat-error>Bitte gebe einen Ansprechpartner an.</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field class="w-100">
+    <mat-label>Email</mat-label>
+    <input
+      id="email"
+      type="email"
+      matInput
+      formControlName="email"
+      [value]="entsorgerProfil().entsorgerdaten.email"
+    />
+
+    @if(changeEntsorgerForm.get('email')!.hasError('required') &&
+    changeEntsorgerForm.get('email')!.dirty) {
+    <mat-error>Bitte gebe einen Emailadresse an.</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field class="w-100">
+    <mat-label>Telefonnummer</mat-label>
+    <input
+      id="telefonnummer"
+      type="tel"
+      matInput
+      formControlName="telefonnummer"
+      [value]="entsorgerProfil().entsorgerdaten.telefonnummer"
+    />
+
+    @if(changeEntsorgerForm.get('telefonnummer')!.hasError('required') &&
+    changeEntsorgerForm.get('email')!.dirty) {
+    <mat-error>Bitte gebe eine Telefonnummer an.</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field class="w-100">
+    <mat-label>Bundesländerauswahl</mat-label>
+    <mat-select
+      formControlName="bundesland"
+      [(value)]="entsorgerProfil().firmendaten.bundesland"
+      (selectionChange)="getGemeinden($event.value, '')"
+    >
+      <mat-option [value]=""></mat-option>
+
+      @for(bundesland of bundeslaender(); track bundesland){
+      <mat-option [value]="bundesland.name"> {{ bundesland.name }}</mat-option>
+      }
+    </mat-select>
+    @if(this.changeEntsorgerForm.get('bundesland')?.value === '' ||
+    this.changeEntsorgerForm.get('bundesland')?.value === undefined) {
+    <mat-error>Bitte wähle ein Bundesland aus.</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field class="w-100">
+    <mat-label>Ortsauswahl</mat-label>
+    <mat-select
+      formControlName="postleitzahl"
+      [(value)]="entsorgerProfil().firmendaten.postleitzahl"
+      (selectionChange)="getStadt($event)"
+    >
+      <mat-option>
+        <ngx-mat-select-search
+          [formControl]="filterCtrl"
+        ></ngx-mat-select-search>
+      </mat-option>
+
+      <mat-option [value]=""></mat-option>
+
+      @for(gemeinde of filteredGemeinden(); track gemeinde){
+      <mat-option [value]="gemeinde.postalCode">
+        {{ gemeinde.postalCode }}, {{ gemeinde.name }}</mat-option
+      >
+      }
+    </mat-select>
+    @if(this.changeEntsorgerForm.get('postleitzahl')?.value === '' ||
+    this.changeEntsorgerForm.get('postleitzahl')?.value === undefined) {
+    <mat-error>Bitte wähle einen Ort aus.</mat-error>
+    }
+  </mat-form-field>
+
+  <app-image-upload
+    inputId="logo"
+    label="Firmenlogo und Bilder"
+    [imageArray]="bildArray"
+    [uploadPath]="entsorgerProfil().entsorgerFilepath.logoPath"
+    (imagePicked)="onFilePicked($event, 'logo')"
+    (imageDeleted)="deleteFilePreview($event, 'logo')"
+    (uploadPathDeleted)="deleteUploadPath($event, 'logoPath')"
+  ></app-image-upload>
+
+  <app-image-upload
+    inputId="zertifikate"
+    label="Zertifikate"
+    [imageArray]="zertifikateArray"
+    [uploadPath]="entsorgerProfil().entsorgerFilepath.zertifikatePath"
+    (imagePicked)="onFilePicked($event, 'zertifikate')"
+    (imageDeleted)="deleteFilePreview($event, 'zertifikate')"
+    (uploadPathDeleted)="deleteUploadPath($event, 'zertifikatePath')"
+  ></app-image-upload>
+
+  <app-image-upload
+    inputId="genehmigungen"
+    label="Genehmigungen"
+    [imageArray]="genehmigungenArray"
+    [uploadPath]="entsorgerProfil().entsorgerFilepath.genehmigungenPath"
+    (imagePicked)="onFilePicked($event, 'genehmigungen')"
+    (imageDeleted)="deleteFilePreview($event, 'genehmigungen')"
+    (uploadPathDeleted)="deleteUploadPath($event, 'genehmigungenPath')"
+  ></app-image-upload>
+
+  <mat-form-field class="w-100">
+    <mat-label>Tätigkeitsbereich in denen du tätig bist</mat-label>
+    <mat-select
+      id="taetigkeitsbereich"
+      formControlName="taetigkeitsbereich"
+      multiple
+      (selectionChange)="
+        updateFormFieldSelectOptions($event, 'taetigkeitsbereich')
+      "
+      [value]="
+        this.entsorgerSignal.entsorgerForDisplay().entsorgerBeschreibung
+          .taetigkeitsbereich
+      "
+    >
+      @for(option of taetigkeitsbereichAuswahl; track option; let i = $index) {
+      <mat-option [value]="option">
+        {{ option }}
+      </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="w-100">
+    <mat-label>Logistikbereiche in denen du tätig bist</mat-label>
+    <mat-select
+      id="logistik"
+      formControlName="logistik"
+      multiple
+      (selectionChange)="updateFormFieldSelectOptions($event, 'logistik')"
+      [value]="
+        this.entsorgerSignal.entsorgerForDisplay().entsorgerBeschreibung
+          .logistik
+      "
+    >
+      @for(option of logistikAuswahl; track option; let i = $index) {
+      <mat-option [value]="option">
+        {{ option }}
+      </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <div class="d-flex">
+    <mat-form-field class="w-100">
+      <mat-label>Dienstleistungen, die du anbietest</mat-label>
+      <input
+        id="dienstleistungen"
+        type="text"
+        matInput
+        formControlName="dienstleistungen"
+      />
+    </mat-form-field>
+    <div class="d-grid gap-2 ms-1 d-flex">
+      <button
+        class="btn btn-primary"
+        color="accent"
+        type="button"
+        (click)="addToList('dienstleistungen')"
+        [disabled]="
+          this.changeEntsorgerForm.get('dienstleistungen')!.invalid ||
+          this.changeEntsorgerForm.get('dienstleistungen')!.value === ''
+        "
+      >
+        Hinzufügen
+      </button>
+      <img
+        class="help-icon gap-1"
+        src="../../../../assets/icons/help.png"
+        matTooltip="Beschreibung deiner Dienstleistungen: Abriss und Entsorgungen"
+      />
+    </div>
+  </div>
+
+  @if(entsorgerProfil().entsorgerBeschreibung.dienstleistungen.length > 0) {
+  <p>Ausgewählte Dienstleistungen, die du anbietest</p>
+  @for( item of entsorgerProfil().entsorgerBeschreibung.dienstleistungen; track
+  item; let i = $index) {
+  <ul>
+    <div class="d-flex align-items-center">
+      <li class="minWidth">{{ item }}</li>
+      <button
+        class="btn btn-danger ms-3 padding"
+        (click)="deleteTaetigkeitsbereich(i, 'dienstleistungen')"
+      >
+        x
+      </button>
+    </div>
+  </ul>
+  } }
+
+  <div class="d-flex">
+    <mat-form-field class="w-100">
+      <mat-label
+        >Zertifikate, die du besitzt, aber nicht hochladen möchtest</mat-label
+      >
+      <input
+        id="zertifikatsbestaetigungen"
+        type="text"
+        matInput
+        formControlName="zertifikatsbestaetigungen"
+      />
+    </mat-form-field>
+    <div class="d-grid gap-2 ms-1 d-flex">
+      <button
+        class="btn btn-primary"
+        color="accent"
+        type="button"
+        (click)="addToList('zertifikatsbestaetigungen')"
+        [disabled]="
+          this.changeEntsorgerForm.get('zertifikatsbestaetigungen')!.invalid ||
+          this.changeEntsorgerForm.get('zertifikatsbestaetigungen')!.value ===
+            ''
+        "
+      >
+        Hinzufügen
+      </button>
+      <img
+        class="help-icon gap-1"
+        src="../../../../assets/icons/help.png"
+        matTooltip="Gebe alle Zertifikate und Genehmigunen an, die du besitzt, aber nicht hochladen möchtest"
+      />
+    </div>
+  </div>
+
+  @if(entsorgerProfil().entsorgerBeschreibung.zertifikatsbestaetigungen.length >
+  0) {
+  <p>Ausgewählte Zertifikate, die du auf Nachfrage bereit stellen kannst.</p>
+  @for( item of
+  entsorgerProfil().entsorgerBeschreibung.zertifikatsbestaetigungen; track item;
+  let i = $index) {
+  <ul>
+    <div class="d-flex align-items-center">
+      <li class="minWidth">{{ item }}</li>
+      <button
+        class="btn btn-danger ms-3 padding"
+        (click)="deleteTaetigkeitsbereich(i, 'zertifikatsbestaetigungen')"
+      >
+        x
+      </button>
+    </div>
+  </ul>
+  } }
+
+  <div class="mb-3 form-group form-floating">
+    <button class="btn btn-primary" type="button" (click)="openDialog()">
+      Auswahl der AVV-Nummern
+    </button>
+  </div>
+
+  <mat-form-field class="w-100">
+    <mat-label>Ausführliche Beschreibung von Besonderheiten</mat-label>
+    <textarea
+      id="besonderheiten"
+      type="text"
+      matInput
+      formControlName="besonderheiten"
+      [value]="entsorgerProfil().entsorgerBeschreibung.besonderheiten"
+    ></textarea>
+  </mat-form-field>
+
+  <div class="d-grid gap-2">
+    <button class="btn btn-primary" color="accent" type="submit">
+      Entsorgerprofil aktualisieren
+    </button>
+  </div>
+</form>
+}

@@ -1,0 +1,79 @@
+<div class="container">
+  <div class="row mt-3 mb-3 justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8">
+      <mat-accordion>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title> Waste Of The Day freischalten </mat-panel-title>
+            <mat-panel-description></mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="card-body">
+            Filter: <mat-slide-toggle [checked]="this.filterFreigabeStatusSignal()" (toggleChange)="filterFreigabeStatus()"></mat-slide-toggle>
+            @for(reservation of filterReservations(); track reservation.day) {
+            <div>InseratID: {{ reservation.inseratID }}</div>
+            <div>Reservierter Tag: {{ reservation.day | date }}</div>
+            <div>Bestellnummer:{{ reservation.bestellnummer }}</div>
+            <div>
+              freigegeben?
+              <mat-slide-toggle
+                [checked]="reservation.freigegeben"
+                (toggleChange)="
+                  changeFreigabe(reservation.inseratID, reservation.day)
+                "
+              ></mat-slide-toggle>
+            </div>
+            <hr />
+            }
+          </div>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title> Inserate </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <mat-form-field class="w-100">
+            <mat-label>Inserate filtern nach Inseratbezeichnung, Firma oder Ansprechpartner</mat-label>
+            <input matInput type="text" [(ngModel)]="value">
+            @if (value()) {
+              <button matSuffix mat-icon-button aria-label="Clear" (click)="resetFilter()">
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </mat-form-field>
+          @if(this.adminInserateSignal().length > 0) { @for(inserat of
+          this.filteredInserate(); track inserat._id) {
+          <div class="card-body d-flex justify-content-between">
+
+            <div class="">
+              <div>InseratID: {{ inserat._id }}</div>
+              <div>
+                Inserat: {{ inserat.inseratBeschreibung.abfallbezeichnung }}
+              </div>
+              <div>Erstellt von: {{ inserat.inseratErsteller?.firma }}</div>
+              <div>
+                Ansprechpartner: {{ inserat.inseratErsteller?.ansprechpartner }}
+              </div>
+            </div>
+            <img class="icon" src="../../../../../assets/icons/delete.png" (click)="deleteInserat(inserat._id!)">
+
+          </div>
+          <hr />
+
+          } }
+
+          <!-- @if(this.filterInserateSignal().inserate.length > 0) {
+          <mat-paginator
+            [length]="filterInserateSignal().totalInserate"
+            [pageSize]="pageSizeSignal()"
+            [pageSizeOptions]="pageSizeOptions"
+            (page)="onChangePage($event)"
+          >
+          </mat-paginator>
+          } -->
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+  </div>
+</div>

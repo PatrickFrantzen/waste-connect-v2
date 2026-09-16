@@ -1,0 +1,157 @@
+<form [formGroup]="suchForm" (submit)="filterEntsorger(filterForEntsorger)">
+  <mat-form-field class="w-100">
+    <mat-label>Abfallursprung, z.B. 01</mat-label>
+    <mat-select
+      formControlName="abfallursprung"
+      (selectionChange)="onKategorieChange('abfallursprung')"
+    >
+      <mat-option [value]=""></mat-option>
+
+      @for(avv of allAVV1; track avv.value){
+      <mat-option [value]="avv.value">
+        {{ avv.value }}
+        @if (avv.viewValue.length > 150) {
+        {{ avv.viewValue | truncateText : 150 }}
+        } @else {
+        {{ avv.viewValue }}
+        }
+      </mat-option>
+      }
+    </mat-select>
+    @if(this.selectedValueAVV1) {
+    <p class="font-small">{{ this.selectedValueAVV1.viewValue }}</p>
+    }
+  </mat-form-field>
+
+  <mat-form-field class="w-100">
+    <mat-label
+      >Abfallschlüsselnummer, z.B. {{ suchForm.value.abfallursprung }} 02
+      03</mat-label
+    >
+    <mat-select
+      formControlName="abfallschluesselnummer"
+      (selectionChange)="onKategorieChange('abfallschluesselnummer')"
+    >
+      <mat-option [value]=""></mat-option>
+
+      @for(avv of getFilteredAVV3(); track avv.value){
+      <mat-option [value]="avv.value">
+        {{ avv.value }}
+        @if (avv.viewValue.length > 150) {
+        {{ avv.viewValue | truncateText : 150 }}
+        } @else {
+        {{ avv.viewValue }}
+        }
+      </mat-option>
+      }
+    </mat-select>
+    @if(this.selectedValueAVV3) {
+    <p class="font-small">{{ this.selectedValueAVV3.viewValue }}</p>
+    }
+  </mat-form-field>
+
+  <mat-form-field class="w-100">
+    <mat-label>Logistikoptionen</mat-label>
+    <mat-select
+      formControlName="logistik"
+      multiple
+      (selectionChange)="updateFormFieldSelectOptions($event, 'logistik')"
+    >
+      <mat-option value="Abfälle können vom Abfallerzeuger angeliefert werden"
+        >Abfälle können vom Abfallerzeuger angeliefert werden</mat-option
+      >
+      <mat-option value="Abfälle könen beim Abfallerzeuger abgeholt werden">Abfälle können beim Abfallerzeuger abgeholt werden</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="w-100">
+    <mat-label
+      >Stichwortsuche: Tätigkeitsbereiche z.B. Abfallentsorgung,
+      Containerdienst, Recyclinghof
+    </mat-label>
+    <input
+      id="taetigkeitsbereich"
+      type="text"
+      matInput
+      formControlName="taetigkeitsbereich"
+    />
+  </mat-form-field>
+
+  <mat-form-field class="w-100">
+    <mat-label
+      >Stichwortsuche: Dienstleistungen z.B. Abfallentsorgung, Abfallverwertung,
+      Abfallverwertung, Altpapierentsorgung
+    </mat-label>
+    <input
+      id="dienstleistungen"
+      type="text"
+      matInput
+      formControlName="dienstleistungen"
+    />
+  </mat-form-field>
+
+  <mat-form-field class="w-100">
+    <mat-label>Stichwortsuche: Zertifikate z.B. nach §56 KrWG </mat-label>
+    <input
+      id="zertifikate"
+      type="text"
+      matInput
+      formControlName="zertifikate"
+    />
+  </mat-form-field>
+
+  <mat-form-field class="w-100">
+    <mat-label>Bundesländerauswahl</mat-label>
+    <mat-select
+      formControlName="bundesland"
+      (selectionChange)="getGemeinden($event.value)"
+    >
+      <mat-option [value]=""></mat-option>
+
+      @for(bundesland of
+      this.filterEntsorgerSignal().numberOfEntsorgerByBundesland; track
+      bundesland.name){
+      <mat-option [value]="bundesland.name" [disabled]="bundesland.value == 0">
+        {{ bundesland.name }} ({{ bundesland.value }})
+      </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="w-100">
+    <mat-label>Ortsauswahl</mat-label>
+    <mat-select
+      formControlName="postleitzahl"
+      (selectionChange)="getStadt($event)"
+    >
+      <mat-option>
+        <ngx-mat-select-search
+          [formControl]="filterCtrl"
+        ></ngx-mat-select-search>
+      </mat-option>
+      <mat-option [value]=""></mat-option>
+
+      @for(gemeinde of filteredGemeinden(); track gemeinde.name){
+      <mat-option [value]="gemeinde.postleitzahl">
+        {{ gemeinde.postleitzahl }}, {{ gemeinde.name }}</mat-option
+      >
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <div class="row">
+    <button
+      type="submit"
+      class="btn btn-primary align-self-end mb-3 button-height-35rem"
+    >
+      Abfallentsorger filtern: ({{ filterEntsorgerSignal().numberOfEntsorger }})
+    </button>
+    <button
+      type="button"
+      class="btn background-beige button-height-35rem"
+      (click)="filterReset()"
+    >
+      Filter zurücksetzen
+    </button>
+  </div>
+</form>

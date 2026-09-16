@@ -1,0 +1,125 @@
+.card-img-top {
+    width: 25vw;
+    height: 30vh;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 2px 2px 2px rgba($color: #000000, $alpha: .5);
+  
+  }
+  
+  .emailForm {
+    width: 25vw;
+    height: 40vh;
+  }
+  
+  .icon {
+    width: 35px;
+    height: 35px;
+  }
+  
+  p {
+    font-size: 16px;
+  }
+  
+  .icon-area {
+  
+    img:not(:last-child) {
+      margin-left: 8px;
+      margin-right: 8px;
+    }
+  
+    img:last-child {
+      margin-left: 8px;
+    }
+  }
+  
+  .inserate-image {
+    width: 15%;
+  
+    img {
+        width: 100%;
+        box-shadow: 5px 5px 16px rgba($color: white, $alpha: .8);
+    }
+  }
+  .font-bezeichnung {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .font-avv {
+    font-size: 1.2rem;
+  }
+  
+  .beschreibung {
+    min-height: 75px;
+  }
+  
+  .dialog-image {
+      max-height: 35vh;
+      max-width: 70vw;
+      // width: 25vw;
+      // height: 30vh;
+      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: 2px 2px 2px rgba($color: #000000, $alpha: .5);
+      margin-top: 16px;
+  }
+  
+  .position-relative {
+      position: relative;
+    }
+    
+    .arrow {
+      position: absolute;
+      top: 40%;
+      width: 50px; // adjust as needed
+      height: 50px; // adjust as needed
+      cursor: pointer;
+      filter: invert(1); // This will make the black image white
+      transition: 0.3s; // This will animate the hover effect
+  }
+  
+    .arrow:hover {
+      background-color: rgba(248, 248, 248, 0.5); // This will make the background black
+      border-radius: 50%;
+  }
+  
+  .image-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  
+  
+  .left-arrow {
+    left: 10px;
+  }
+  
+  .right-arrow {
+    right: 10px;
+  }
+    
+  
+    button {
+      width: 100%;
+    }
+  
+    .close-button {
+      width: 100px ;
+    }
+  
+    textarea {
+      width: 100%;
+      height: 200px !important;
+      resize: none;
+  }
+
+  .pdf-titel {
+    display: inline-block;
+    min-width: 110px;
+  }
+
+  .avv-list {
+    height: 125px;
+    overflow: auto;
+  }

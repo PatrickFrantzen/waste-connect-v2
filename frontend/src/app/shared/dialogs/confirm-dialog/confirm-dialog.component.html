@@ -1,0 +1,22 @@
+<div class="container">
+    <div class="bg-body-tertiary">
+        <div class=" d-flex align-items-center flex-column mt-3">
+            @if (data.type === 'waste') {
+                <h1>Hiermit bestätigst du kostenpflicht die Buchung "Waste of the Day" für folgende Tage</h1>
+                @for (day of data.dates; track day) {
+                    <p>{{day}}</p>
+                }
+        
+            } @else if(data.type === 'Logistik') {
+        
+            } @else {
+                <p>{{data.text}}</p>
+            }
+        </div>
+
+        <div class="d-flex justify-content-end mb-3">
+            <button class="btn btn-primary me-3" (click)="confirm()">Buchen</button>
+            <button class="btn btn-primary " (click)="abbrechen()">Abbrechen</button>
+    </div>
+
+</div>

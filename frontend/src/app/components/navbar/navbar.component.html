@@ -1,0 +1,156 @@
+<div class="container">
+  <nav class="navbar navbar-expand-lg bg-body-tertiary py-3 mb-4 border-bottom">
+    @if(tokenSignal()) {
+      <div class="d-flex align-items-center">
+        <div class="dropdown">
+          <button
+            class="btn dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <img src="../../../../../assets/icons/menu.png" />
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <span class="ms-3 fs-5">Mein Bereich</span>
+            <li>
+              <button
+                class="dropdown-item preventActiveColor"
+                routerLink="/account/inserate"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+              >
+                <span>Inserate</span>
+              </button>
+            </li>
+            <li>
+              <button
+                class="dropdown-item preventActiveColor"
+                routerLink="/account/merkzettel"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+              >
+                <span>Merkzettel</span>
+              </button>
+            </li>
+  
+            <li>
+              <button
+                class="dropdown-item preventActiveColor"
+                routerLink="/account/letzteSuche"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+              >
+                <span>Letzte Suchen</span>
+              </button>
+            </li>
+            <li>
+              <button
+                class="dropdown-item preventActiveColor"
+                routerLink="/account/messages"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+              >
+                <span>Benachrichtigungen</span>
+              </button>
+            </li>
+            <li>
+              <button
+                class="dropdown-item preventActiveColor"
+                routerLink="/account/einstellungen"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+              >
+                <span>Einstellungen</span>
+              </button>
+            </li>
+            @if (adminSignal()) {
+              <li>
+                <button
+                  class="dropdown-item preventActiveColor"
+                  routerLink="/account/adminpanel"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                >
+                  <span>Admin</span>
+                </button>
+              </li>
+            }
+
+            <hr>
+            <li>
+              <button class="dropdown-item" (click)="onLogout()">
+                <span>Logout</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    }
+
+    <div
+      class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none cursor-pointer"
+      routerLink="/"
+      (click)="resetToggledShowInserateAndEntsorgerOnLandingPage('startseite')"
+    >
+      <img
+        class="me-3 ms-3 logo"
+        src="../../../../../assets/img/logo_grau.jpg"
+        alt="waste-connect.de-Logo"
+      />
+      <span class="fs-4">waste-connect.de</span>
+    </div>
+    <ul class="nav nav-pills">
+      <li>
+        <a
+          class="btn nav-item"
+          routerLink="/"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          [ngClass]="{ notactive: showSignal().show === 'inserate' || showSignal().show === 'entsorger'}"
+          (click)="resetToggledShowInserateAndEntsorgerOnLandingPage('startseite')"
+          >Über uns</a
+        >
+      </li>
+      <li>
+        <a
+          class="btn nav-item"
+          routerLink="/"
+          routerLinkActive=""
+          [ngClass]="{ active: showSignal().show === 'inserate' }"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="resetToggledShowInserateAndEntsorgerOnLandingPage('inserate')"
+          >Inserate suchen</a
+        >
+      </li>
+
+      <li>
+        <a
+          class="btn nav-item"
+          routerLink="/"
+          routerLinkActive=""
+          [routerLinkActiveOptions]="{ exact: true }"
+          [ngClass]="{ active: showSignal().show === 'entsorger' }"
+          (click)="resetToggledShowInserateAndEntsorgerOnLandingPage('entsorger')"
+          >Abfallentsorger suchen</a
+        >
+      </li>
+        @if(tokenSignal()=== '') {
+          <li >
+            <a class="btn nav-item" routerLink="/login" routerLinkActive="active"
+              >Login</a
+            >
+          </li>
+        } @else {
+          <li>
+            <a class="btn nav-item" routerLink="/anbieten" routerLinkActive="active" (click)="resetToggledShowInserateAndEntsorgerOnLandingPage('startseite')"
+              >Neues Inserat erstellen</a
+            >
+          </li>
+          <li>
+            <button class="btn nav-item" (click)="onLogout()">Logout</button>
+          </li>
+        }
+    </ul>
+  </nav>
+</div>

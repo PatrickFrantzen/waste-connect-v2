@@ -1,0 +1,2 @@
+# npm workspaces hoisten node_modules an die Root
+/node_modules
