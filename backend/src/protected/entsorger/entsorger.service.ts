@@ -11,6 +11,7 @@ import { Benutzer } from "src/schemas/user.schema";
 import { EntsorgerFilterDto } from "./dto/filter-entsorger.dto";
 import { PaginatorDto } from "../inserat/dto/paginator-inserat.dto";
 import { zaehleNachBundesland } from "src/utils/statistik/bundeslaender";
+import { isSafeFilterValue } from "src/common/safe-filter-value";
 
 /**
  * Verwaltet die Entsorgerprofile selbst: anlegen, lesen, filtern,
@@ -198,43 +199,42 @@ export class EntsorgerService {
     let query = {};
     if (filterEntsorgerDto.entsorgerBeschreibung) {
       for (const key in filterEntsorgerDto.entsorgerBeschreibung) {
-        if (
-          filterEntsorgerDto.entsorgerBeschreibung[key] !== undefined &&
-          filterEntsorgerDto.entsorgerBeschreibung[key] !== "" &&
-          filterEntsorgerDto.entsorgerBeschreibung[key] !== null
-        ) {
-          let prefix = "entsorgerBeschreibung";
-          if (["stadt", "bundesland", "postleitzahl"].includes(key)) {
-            prefix = "firmendaten";
-          } else if (key === "avv") {
-            prefix = "avvZusammenfassung";
-          }
-          if (key === "avv") {
-            if (filterEntsorgerDto.entsorgerBeschreibung[key].length > 0) {
-              let avvValue = filterEntsorgerDto.entsorgerBeschreibung[
-                key
-              ].filter((item) => item);
-              if (avvValue.length > 0) {
-                if (avvValue.length === 2) {
-                  avvValue = [avvValue[1]];
-                } else {
-                  avvValue = [avvValue[0]];
-                }
-                const regexPattern = avvValue.map(
-                  (entry) => new RegExp(`^${entry}`, "i")
-                );
-                query[prefix] = { $in: regexPattern };
+        const value = filterEntsorgerDto.entsorgerBeschreibung[key];
+        if (value === undefined || value === "" || value === null) {
+          continue;
+        }
+        if (!isSafeFilterValue(value)) {
+          continue;
+        }
+        let prefix = "entsorgerBeschreibung";
+        if (["stadt", "bundesland", "postleitzahl"].includes(key)) {
+          prefix = "firmendaten";
+        } else if (key === "avv") {
+          prefix = "avvZusammenfassung";
+        }
+        if (key === "avv") {
+          const avvInput = value as string[];
+          if (avvInput.length > 0) {
+            let avvValue = avvInput.filter((item) => item);
+            if (avvValue.length > 0) {
+              if (avvValue.length === 2) {
+                avvValue = [avvValue[1]];
+              } else {
+                avvValue = [avvValue[0]];
               }
+              const regexPattern = avvValue.map(
+                (entry) => new RegExp(`^${entry}`, "i")
+              );
+              query[prefix] = { $in: regexPattern };
             }
-          } else if (key === "zertifikatsbestaetigungen") {
-            const regexPattern = filterEntsorgerDto.entsorgerBeschreibung[
-              key
-            ].map((entry) => new RegExp(entry, "i"));
-            query[`${prefix}.${key}`] = { $in: regexPattern };
-          } else {
-            query[`${prefix}.${key}`] =
-              filterEntsorgerDto.entsorgerBeschreibung[key];
           }
+        } else if (key === "zertifikatsbestaetigungen") {
+          const regexPattern = (value as string[]).map(
+            (entry) => new RegExp(entry, "i")
+          );
+          query[`${prefix}.${key}`] = { $in: regexPattern };
+        } else {
+          query[`${prefix}.${key}`] = value;
         }
       }
     }

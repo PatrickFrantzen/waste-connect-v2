@@ -234,6 +234,19 @@ describe("InseratService (Charakterisierung)", () => {
       expect(builtQuery["inseratBeschreibung.leer"]).toBeUndefined();
     });
 
+    it("verwirft Mongo-Operatoren statt sie in die Query zu übernehmen (NoSQL-Injection)", async () => {
+      await service.getNumberOfFilterInserate({
+        inseratBeschreibung: {
+          abfallursprung: { $ne: null } as any,
+          standort_Bundesland: "Bayern",
+        },
+      } as any);
+
+      const [builtQuery] = inseratModel.countDocuments.mock.calls[0];
+      expect(builtQuery["inseratBeschreibung.abfallursprung"]).toBeUndefined();
+      expect(builtQuery["inseratStandort.standort_Bundesland"]).toBe("Bayern");
+    });
+
     it("liefert bei filterAndPaginate ohne Treffer eine leere Struktur", async () => {
       const result: any = await service.filterAndPaginate({} as any, {
         pageSize: 10,

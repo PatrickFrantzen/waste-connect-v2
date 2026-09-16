@@ -16,6 +16,7 @@ import { MailingService } from "src/utils/mailing/mailing.service";
 import { BenutzerService } from "../benutzer/benutzer.service";
 import { InseratDateienService } from "./inserat-dateien.service";
 import { InseratStatistikService } from "./inserat-statistik.service";
+import { isSafeFilterValue } from "src/common/safe-filter-value";
 
 /**
  * Verwaltet die Inserate selbst: anlegen, lesen, filtern, aktualisieren und
@@ -190,25 +191,22 @@ export class InseratService {
     let query = {};
     if (filterInseratDto.inseratBeschreibung) {
       for (let key in filterInseratDto.inseratBeschreibung) {
-        if (
-          filterInseratDto.inseratBeschreibung[key] !== undefined &&
-          filterInseratDto.inseratBeschreibung[key] !== "" &&
-          filterInseratDto.inseratBeschreibung[key] !== null
-        ) {
-          let prefix = "inseratBeschreibung";
-          if (key.startsWith("standort_")) {
-            prefix = "inseratStandort";
-          }
-          if (key === "abfallbezeichnung") {
-            const regexPattern = new RegExp(
-              filterInseratDto.inseratBeschreibung[key],
-              "i"
-            );
-            query[`${prefix}.${key}`] = regexPattern;
-          } else {
-            query[`${prefix}.${key}`] =
-              filterInseratDto.inseratBeschreibung[key];
-          }
+        const value = filterInseratDto.inseratBeschreibung[key];
+        if (value === undefined || value === "" || value === null) {
+          continue;
+        }
+        if (!isSafeFilterValue(value)) {
+          continue;
+        }
+        let prefix = "inseratBeschreibung";
+        if (key.startsWith("standort_")) {
+          prefix = "inseratStandort";
+        }
+        if (key === "abfallbezeichnung") {
+          const regexPattern = new RegExp(value as string, "i");
+          query[`${prefix}.${key}`] = regexPattern;
+        } else {
+          query[`${prefix}.${key}`] = value;
         }
       }
     }

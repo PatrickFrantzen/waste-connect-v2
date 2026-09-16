@@ -166,6 +166,19 @@ describe("EntsorgerService (Charakterisierung)", () => {
       });
     });
 
+    it("verwirft Mongo-Operatoren statt sie in die Query zu übernehmen (NoSQL-Injection)", async () => {
+      await service.getNumberOfFilterEntsorger({
+        entsorgerBeschreibung: {
+          stadt: { $ne: null } as any,
+          bundesland: "Bayern",
+        },
+      } as any);
+
+      const [builtQuery] = entsorgerModel.find.mock.calls[0];
+      expect(builtQuery["firmendaten.stadt"]).toBeUndefined();
+      expect(builtQuery["firmendaten.bundesland"]).toBe("Bayern");
+    });
+
     it("sucht AVV-Nummern per Präfix-Regex in der Zusammenfassung", async () => {
       await service.getNumberOfFilterEntsorger({
         entsorgerBeschreibung: { avv: ["17", "1701"] },
