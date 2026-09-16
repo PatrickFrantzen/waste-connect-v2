@@ -15,6 +15,10 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      # Muss zur npm-Version passen, mit der package-lock.json erzeugt wurde
+      # (README: npm ci scheitert sonst mit falschem "Missing: <pkg> from
+      # lock file" über verschiedene npm-Majors hinweg trotz gültigem Lockfile).
+      - run: npm install -g npm@11
       - run: npm ci
       # Frontend-Gerüst-Specs sind noch lückenhaft (siehe README/ADR-0002);
       # CI gatet vorerst nur auf dem vollständig grünen Backend-Testlauf.

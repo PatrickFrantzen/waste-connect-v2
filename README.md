@@ -72,9 +72,18 @@ nächsten Update unbedingt beachten:
 - Root-`package.json` hat `"typescript": "6.0.3"` als Override, weil Backend
   (`^5.1.3`) und Frontend (Angular 22 verlangt `>=6.0 <6.1`) sonst
   unvereinbare Ranges hätten — Backend läuft inzwischen mitgetestet auf 6.0.3.
-- `npm install` brauchte einmalig `--legacy-peer-deps` (ts-jest/@babel/core-
-  Peer-Konflikt beim Hochziehen); das gebaute `package-lock.json` reicht
-  danach für normales `npm ci` (auch in CI), ohne das Flag erneut zu brauchen.
+- `legacy-peer-deps=true` steht fest in [.npmrc](.npmrc) (ts-jest/@babel/core-
+  Peer-Konflikt beim Hochziehen) statt nur einmalig als Kommandozeilen-Flag,
+  damit jede Umgebung denselben Auflösungsmodus nutzt.
+- **`npm ci` kann mit falscher "Missing: `<pkg>` from lock file"-Meldung
+  scheitern, obwohl das Lockfile korrekt ist** — wenn die npm-Version
+  abweicht, die es erzeugt hat. Ist mir mit lokal npm 11.6.0 vs. der über
+  `actions/setup-node`+Node 22 gebündelten älteren npm-Version in CI passiert
+  (zweimal reproduziert, jedes Mal ein anderer Fix — `.npmrc` allein hat es
+  NICHT gelöst). Fix: CI pinnt jetzt explizit `npm install -g npm@11` vor
+  `npm ci` ([.github/workflows/test.yml](.github/workflows/test.yml)). Bei
+  künftigen `npm install`-Läufen mit einer neuen lokalen npm-Version diesen
+  Pin mit hochziehen, sonst reißt CI unabhängig vom eigentlichen Update.
 
 ## Deployment
 
