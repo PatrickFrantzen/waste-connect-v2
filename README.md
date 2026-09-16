@@ -50,10 +50,15 @@ vorerst nur auf dem vollständig grünen Backend-Testlauf (siehe unten).
 ## Deployment
 
 Hostinger hPanel Node.js-App-Manager, GitHub-Auto-Deploy auf `main`
-(Root-Verzeichnis `backend`, Root-Build-Skript siehe oben). `main` ist per
-Branch-Protection geschützt: Merges erfordern einen grünen
-Backend-Testlauf ([.github/workflows/test.yml](.github/workflows/test.yml));
-Frontend-Tests werden erst mit Schritt 2 in dieses Gate aufgenommen.
+(Root-Verzeichnis `backend`, Root-Build-Skript siehe oben). CI
+([.github/workflows/test.yml](.github/workflows/test.yml)) läuft bei jedem
+Push/PR und prüft den Backend-Testlauf.
+
+**Keine Branch-Protection**: GitHub verlangt dafür bei privaten Repos einen
+Pro-Plan; auf dem aktuellen Free-Plan lässt sich `main` nicht technisch vor
+Merges bei rotem CI-Lauf schützen. Der grüne Haken vor dem Mergen muss
+bis auf Weiteres manuell geprüft werden. Nachzutragen, sobald ein
+Plan-Upgrade oder ein öffentliches Repo infrage kommt.
 
 Cutover-Strategie: läuft zunächst parallel zur bisherigen Zwei-Projekte-
 Lösung unter einer Test-Domain; DNS wird erst nach erfolgreicher Prüfung
