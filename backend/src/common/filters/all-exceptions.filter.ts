@@ -7,10 +7,6 @@ import {
   Logger,
 } from "@nestjs/common";
 import { Request, Response } from "express";
-import { existsSync } from "fs";
-import { join } from "path";
-
-const INDEX_HTML = join(__dirname, "..", "..", "..", "public", "index.html");
 
 /** Einheitliches Fehlerformat für alle Endpunkte. */
 export interface FehlerAntwort {
@@ -38,24 +34,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-    const path = request?.url ?? "";
+    // originalUrl statt url: seit Nest 12/Express 5 mountet setGlobalPrefix
+    // die API als echten Sub-Router, der das /api/v1-Präfix aus request.url
+    // herausschneidet (siehe main.ts). originalUrl bleibt unangetastet.
+    const path = request?.originalUrl ?? request?.url ?? "";
     const method = request?.method ?? "";
 
     const { statusCode, message, error } = this.normalisiere(exception);
-
-    // SPA-Fallback (siehe docs/adr/0002-single-origin-deployment.md): Nest
-    // beantwortet jede nicht gematchte Route selbst mit 404, bevor eigene
-    // app.use()-Middleware zum Zug käme. Für nicht-API-GET-Anfragen liefern
-    // wir deshalb hier index.html statt einer JSON-Fehlermeldung.
-    if (
-      statusCode === HttpStatus.NOT_FOUND &&
-      method === "GET" &&
-      !path.startsWith("/api/v1") &&
-      existsSync(INDEX_HTML)
-    ) {
-      response.sendFile(INDEX_HTML);
-      return;
-    }
 
     if (statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger.error(

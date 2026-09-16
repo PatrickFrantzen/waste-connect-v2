@@ -5,6 +5,7 @@ import { AllExceptionsFilter } from "./common/filters/all-exceptions.filter";
 import { ConfigService } from "@nestjs/config";
 import { parseCorsOrigins } from "./common/cors-origins";
 import * as express from "express";
+import { existsSync } from "fs";
 import { join } from "path";
 import helmet from "helmet";
 const bodyParser = require("body-parser");
@@ -39,9 +40,31 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
   app.use(bodyParser.json({ limit: "50mb" }));
   app.use("/uploads", express.static(join(__dirname, "..", "uploads")));
-  // Statische Angular-Assets (JS/CSS/Bilder); der SPA-Routing-Fallback für
-  // alles andere (z. B. /login) läuft über AllExceptionsFilter, siehe dort.
   app.use(express.static(join(__dirname, "..", "public")));
+
+  // SPA-Routing-Fallback (siehe docs/adr/0002-single-origin-deployment.md).
+  // Unter Nest 12 + Express 5 mountet setGlobalPrefix die API als echten
+  // Sub-Router auf /api/v1 (statt wie bisher Pfade als String zu
+  // verketten); alles außerhalb dieses Präfixes erreicht Nest (und damit
+  // dessen Guards/Filter) gar nicht mehr. Der Fallback muss deshalb als
+  // eigene Express-Middleware NACH app.init() sitzen: app.init() bindet
+  // erst den /api/v1-Sub-Router, danach hinzugefügte Middleware greift nur
+  // noch für alles, was dieser Mount nicht selbst abschließend beantwortet
+  // hat (empirisch geprüft — ein früherer Versuch mit einem Catch-all im
+  // AllExceptionsFilter griff bei "/api/v1/nope" wegen des jetzt vom
+  // Sub-Router gekappten request.url ins Leere).
+  await app.init();
+  app.use((req, res, next) => {
+    if (req.method !== "GET") {
+      return next();
+    }
+    const indexHtml = join(__dirname, "..", "public", "index.html");
+    if (!existsSync(indexHtml)) {
+      res.status(404).send("Frontend-Build nicht gefunden (public/ fehlt).");
+      return;
+    }
+    res.sendFile(indexHtml);
+  });
 
   // const port = 8080;
   const normalizePort = (val) => {

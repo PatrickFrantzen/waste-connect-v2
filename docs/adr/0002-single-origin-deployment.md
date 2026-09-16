@@ -21,16 +21,29 @@ statisch aus `backend/public/` (per `scripts/copy-frontend-build.js` aus dem
 Frontend-Build kopiert). Ein Hostinger-Slot, eine Domain, same-origin in
 Produktion.
 
-**SPA-Routing-Fallback**: Nest beantwortet jede nicht gematchte Route noch
-innerhalb seiner eigenen Router-Pipeline mit einer 404 — eigene, danach per
-`app.use()` registrierte Middleware (z. B. ein separater
-`@Get('*')`-Catch-all-Controller) wird dafür nie erreicht, unabhängig von
-`setGlobalPrefix`-`exclude`-Optionen (empirisch geprüft, siehe
-Considered-Options). Der Fallback läuft deshalb im ohnehin vorhandenen
-globalen `AllExceptionsFilter` (`backend/src/common/filters/all-exceptions.filter.ts`):
-eine `NotFoundException` auf einem GET-Request außerhalb von `/api/v1`
-liefert `index.html` statt der üblichen JSON-Fehlerform, sofern
-`backend/public/index.html` existiert.
+**SPA-Routing-Fallback** (Stand: NestJS 12 / Express 5, `backend/src/main.ts`):
+eine Express-Middleware, registriert per `app.use()` **nach** `await
+app.init()`, liefert `index.html` für jeden verbleibenden GET-Request.
+`app.init()` bindet dabei bereits den kompletten `/api/v1`-Sub-Router (siehe
+unten); erst danach hinzugefügte Middleware greift nur noch für alles, was
+dieser Mount nicht selbst beantwortet hat — echte API-404s enden weiterhin
+innerhalb des Sub-Routers im `AllExceptionsFilter`
+(`backend/src/common/filters/all-exceptions.filter.ts`, reines
+Fehlerformat, keine SPA-Logik mehr) und erreichen diese Middleware gar
+nicht erst.
+
+**setGlobalPrefix und der Sub-Router-Mount (NestJS 12 / Express 5)**: Seit
+Nest 12 (bundlet Express 5) mountet `app.setGlobalPrefix("api/v1")` die
+gesamte API intern als echten `app.use('/api/v1', ...)`-Sub-Router, statt
+wie bisher unter Nest ≤11 jede Route-Pfad-Zeichenkette mit dem Präfix zu
+verketten. Zwei spürbare Folgen: (1) Requests außerhalb von `/api/v1`
+erreichen Nest — und damit Guards, Interceptors, den globalen Exception-
+Filter — überhaupt nicht mehr, nur noch rohe, vorher registrierte
+Express-Middleware sieht sie. (2) Innerhalb des Sub-Routers ist
+`request.url` auf den Teil *nach* dem Präfix gekappt (Express-Standard-
+verhalten bei gemounteten Routern); der Exception-Filter nutzt deshalb
+`request.originalUrl` statt `request.url` für die `path`-Angabe in der
+Fehlerantwort.
 
 ## Considered Options
 
@@ -45,17 +58,20 @@ liefert `index.html` statt der üblichen JSON-Fehlerform, sofern
   beim Neuaufsetzen nichts extra, verhindert aber einen Breaking-Change
   später, falls Schritt 3 (NestJS-Überarbeitung) an Endpunkt-Signaturen
   rüttelt.
-- **Separater `@Get('*')`-Catch-all-Controller für den SPA-Fallback**:
-  verworfen, obwohl zunächst so umgesetzt. In Tests gegen den laufenden
-  Server verschluckte die Wildcard-Route auch `/api/v1/*`-Anfragen — Nest
+- **Separater `@Get('*')`-Catch-all-Controller für den SPA-Fallback**
+  (Nest ≤11-Ära): verworfen. In Tests gegen den laufenden Server
+  verschluckte die Wildcard-Route auch `/api/v1/*`-Anfragen — Nest
   registriert die Controller des Root-Moduls (hier: der Catch-all) vor denen
   importierter Feature-Module, entgegen der Erwartung "Imports zuerst".
-  Ein Negative-Lookahead-Regex auf der Route sowie ein explizites
-  `app.init()` vor einer nachträglich registrierten Fallback-Middleware
-  wurden ebenfalls verworfen (Nests eigener 404-Handler beendet die Anfrage
-  bereits während `init()`, bevor später registrierte Middleware je liefe).
-  Der Exception-Filter ist der einzige Punkt, der zuverlässig *nach* Nests
-  eigener Routenauflösung läuft.
+- **SPA-Fallback im `AllExceptionsFilter`** (Nest ≤11-Ära): funktionierte
+  unter Nest 10/11, wurde beim Sprung auf Nest 12 aber falsch: der
+  Sub-Router-Mount (siehe oben) kappt `request.url` innerhalb des Filters
+  auf den Teil nach `/api/v1`, wodurch `/api/v1/nope` fälschlich als
+  Nicht-API-Pfad erkannt wurde und `index.html` statt JSON lieferte —
+  während echte Nicht-API-Pfade wie `/xyz` den Filter unter Nest 12 gar
+  nicht mehr erreichten (siehe oben) und stattdessen Express' rohe
+  Default-404-Seite bekamen. Durch die jetzige Express-Middleware nach
+  `app.init()` ersetzt, die von der Sub-Router-Mount-Frage unabhängig ist.
 
 ## Consequences
 
@@ -63,9 +79,9 @@ liefert `index.html` statt der üblichen JSON-Fehlerform, sofern
   und braucht dort weiterhin CORS; nur Produktion ist same-origin.
 - Jede neue API-Route muss unter `/api/v1` liegen, sonst landet sie im
   SPA-Fallback statt in einem Controller.
-- `AllExceptionsFilter` trägt jetzt zwei Verantwortlichkeiten (Fehlerformat
-  UND SPA-Fallback) statt einer — bewusst in Kauf genommen, weil es der
-  einzige zuverlässige Ort dafür ist (siehe Considered Options).
+- `AllExceptionsFilter` ist wieder rein auf Fehlerformat beschränkt (siehe
+  Considered Options); der SPA-Fallback sitzt als eigene Middleware in
+  `main.ts`.
 - `backend.printbypatrick.de` kann als zusätzlicher Hostname auf denselben
   Prozess zeigen (kostet keinen weiteren Slot), ist aber nicht mehr
   Voraussetzung fürs Funktionieren des Frontends.

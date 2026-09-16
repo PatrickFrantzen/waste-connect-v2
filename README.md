@@ -49,7 +49,7 @@ vorerst nur auf dem vollständig grünen Backend-Testlauf (siehe unten).
 
 ## Dependency-Updates
 
-Stand: NestJS 10 (Backend), Angular 22 + TypeScript 6.0 (Frontend). Beim
+Stand: NestJS 12 (Backend), Angular 22 + TypeScript 6.0 (Frontend). Beim
 nächsten Update unbedingt beachten:
 
 - **Hoisting-Duplikate**: `npm install <pkg>@x -w <workspace>` aktualisiert
@@ -84,6 +84,29 @@ nächsten Update unbedingt beachten:
   `npm ci` ([.github/workflows/test.yml](.github/workflows/test.yml)). Bei
   künftigen `npm install`-Läufen mit einer neuen lokalen npm-Version diesen
   Pin mit hochziehen, sonst reißt CI unabhängig vom eigentlichen Update.
+- **NestJS 12 ist ESM-only** (`@nestjs/common`, `core`, ... liefern
+  `"type": "module"`, kein CommonJS-Export mehr) — betrifft nicht nur
+  `@nestjs/mapped-types` (das bleibt deshalb absichtlich bei `^2.0.5`/2.1.1
+  statt 12.0.0, siehe Commit-Historie). Braucht **keine** Migration der
+  eigenen Imports: Node ≥24.9 kann ESM-Pakete nativ per `require()` laden,
+  und seit Jest 30 nutzt `jest-runtime` das automatisch mit — vorausgesetzt,
+  `NODE_OPTIONS=--experimental-vm-modules` ist gesetzt (steht fest in den
+  `test`-Skripten in [backend/package.json](backend/package.json), macht
+  `vm.SourceTextModule` verfügbar, ohne das bleibt Jest auf dem alten,
+  CJS-only-Pfad und bricht mit "Must use import to load ES Module").
+- **NestJS 12 bringt zusätzlich Express 5 mit** (`@nestjs/platform-express`
+  pinnt es als direkte Abhängigkeit) — eigener Major, unabhängig von der
+  ESM-Frage. `setGlobalPrefix("api/v1")` mountet die API seitdem als
+  echten `app.use('/api/v1', ...)`-Sub-Router statt wie bisher Pfade als
+  String zu verketten: Requests außerhalb des Präfixes erreichen Nest
+  (Guards, Filter, ...) gar nicht mehr, und `request.url` ist innerhalb des
+  Sub-Routers auf den Teil nach dem Präfix gekappt (`request.originalUrl`
+  verwenden, wo der volle Pfad gebraucht wird). Der SPA-Fallback musste
+  deshalb vom `AllExceptionsFilter` in eine reine Express-Middleware nach
+  `app.init()` wandern — Details und verworfene Alternativen in
+  [ADR-0002](docs/adr/0002-single-origin-deployment.md). Multer sprang
+  gleichzeitig auf 2.x; die bestehenden Upload-Tests laufen zwar grün,
+  eine genauere Prüfung der Multer-2-Migration steht noch aus (Schritt 3).
 
 ## Deployment
 
