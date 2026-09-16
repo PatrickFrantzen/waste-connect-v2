@@ -12,7 +12,6 @@ import { AngeboteModule } from './unprotected/angebote/angebote.module';
 import { EmailModule } from './mixed-routes/email/email.module';
 import { OfTheDayCalendarModule } from './protected/of-the-day-calendar/of-the-day-calendar.module';
 import { HealthModule } from './health/health.module';
-import { SpaController } from './spa.controller';
 
 @Module({
   imports: [
@@ -42,7 +41,7 @@ import { SpaController } from './spa.controller';
     OfTheDayCalendarModule,
     HealthModule,
   ],
-  controllers: [SpaController],
+  controllers: [],
   providers: [ConnectionService],
 })
 export class AppModule {}

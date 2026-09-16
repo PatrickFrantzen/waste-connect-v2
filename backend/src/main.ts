@@ -1,6 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { RequestMethod, ValidationPipe } from "@nestjs/common";
+import { ValidationPipe } from "@nestjs/common";
 import { AllExceptionsFilter } from "./common/filters/all-exceptions.filter";
 import { ConfigService } from "@nestjs/config";
 import { parseCorsOrigins } from "./common/cors-origins";
@@ -31,17 +31,16 @@ async function bootstrap() {
     methods: "GET, POST, PATCH, DELETE, PUT, OPTIONS",
   });
 
-  // API-Routen unter /api/v1 (siehe ADR-0002); die SPA-Fallback-Route bleibt
-  // unpräfixiert, damit sie jede nicht-API-Route bedienen kann.
-  app.setGlobalPrefix("api/v1", {
-    exclude: [{ path: "*", method: RequestMethod.GET }],
-  });
+  // API-Routen unter /api/v1 (siehe ADR-0002).
+  app.setGlobalPrefix("api/v1");
 
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   // Einheitliches Fehlerformat für alle Endpunkte (siehe Issue #7).
   app.useGlobalFilters(new AllExceptionsFilter());
   app.use(bodyParser.json({ limit: "50mb" }));
   app.use("/uploads", express.static(join(__dirname, "..", "uploads")));
+  // Statische Angular-Assets (JS/CSS/Bilder); der SPA-Routing-Fallback für
+  // alles andere (z. B. /login) läuft über AllExceptionsFilter, siehe dort.
   app.use(express.static(join(__dirname, "..", "public")));
 
   // const port = 8080;

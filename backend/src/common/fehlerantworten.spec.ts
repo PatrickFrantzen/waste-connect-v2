@@ -117,16 +117,18 @@ describe("Einheitliche Fehlerantworten (HTTP)", () => {
     expect(JSON.stringify(antwort.body)).not.toContain("mongodb://");
   });
 
-  it("liefert für unbekannte Routen dieselbe Fehlerform", async () => {
+  it("liefert für unbekannte API-Routen dieselbe Fehlerform", async () => {
+    // /api/v1-Pfade (siehe main.ts, ADR-0002) bleiben JSON-Fehler; alles
+    // andere fällt auf den SPA-Fallback zurück, siehe all-exceptions.filter.ts.
     const antwort = await request(app.getHttpServer())
-      .get("/gibt-es-nicht")
+      .get("/api/v1/gibt-es-nicht")
       .expect(404);
 
     expect(antwort.body).toEqual(
       expect.objectContaining({
         statusCode: 404,
         error: "Not Found",
-        path: "/gibt-es-nicht",
+        path: "/api/v1/gibt-es-nicht",
         timestamp: expect.any(String),
       })
     );

@@ -13,9 +13,12 @@ Ein einziger Node-Prozess:
 - NestJS beantwortet alle API-Routen unter `/api/v1/*`.
 - NestJS liefert den gebauten Angular-Build statisch aus `backend/public/`
   aus (kopiert dorthin durch `scripts/copy-frontend-build.js`).
-- Jede nicht-API-GET-Anfrage fällt an [backend/src/spa.controller.ts](backend/src/spa.controller.ts),
-  das `index.html` zurückgibt (SPA-Routing-Fallback, ersetzt eine
-  `.htaccess`-Rewrite-Regel).
+- Jede nicht-API-GET-Anfrage, die zu keiner Route passt, fällt an den
+  globalen [AllExceptionsFilter](backend/src/common/filters/all-exceptions.filter.ts),
+  der dann `index.html` statt einer JSON-Fehlermeldung liefert
+  (SPA-Routing-Fallback, ersetzt eine `.htaccess`-Rewrite-Regel — warum das
+  im Exception-Filter statt einem eigenen Controller passiert, siehe
+  [ADR-0002](docs/adr/0002-single-origin-deployment.md)).
 
 Frontend und Backend sind dadurch in Produktion **same-origin** — kein CORS,
 keine Cross-Origin-CSP-Ausnahmen nötig.
