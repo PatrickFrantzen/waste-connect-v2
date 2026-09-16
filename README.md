@@ -88,12 +88,21 @@ nächsten Update unbedingt beachten:
   `"type": "module"`, kein CommonJS-Export mehr) — betrifft nicht nur
   `@nestjs/mapped-types` (das bleibt deshalb absichtlich bei `^2.0.5`/2.1.1
   statt 12.0.0, siehe Commit-Historie). Braucht **keine** Migration der
-  eigenen Imports: Node ≥24.9 kann ESM-Pakete nativ per `require()` laden,
-  und seit Jest 30 nutzt `jest-runtime` das automatisch mit — vorausgesetzt,
-  `NODE_OPTIONS=--experimental-vm-modules` ist gesetzt (steht fest in den
-  `test`-Skripten in [backend/package.json](backend/package.json), macht
-  `vm.SourceTextModule` verfügbar, ohne das bleibt Jest auf dem alten,
-  CJS-only-Pfad und bricht mit "Must use import to load ES Module").
+  eigenen Imports: Node kann ESM-Pakete nativ per `require()` laden
+  (unflagged seit Node 22.12), Jest 30 nutzt das seit Kurzem automatisch mit
+  — vorausgesetzt, `NODE_OPTIONS=--experimental-vm-modules` ist gesetzt
+  (steht fest in den `test`-Skripten in [backend/package.json](backend/package.json),
+  macht `vm.SourceTextModule` verfügbar, ohne das bleibt Jest auf dem alten,
+  CJS-only-Pfad und bricht mit "Must use import to load ES Module"). Jests
+  eigene interne Prüfung dafür verlangt **Node ≥24.9** (eine bestimmte
+  `vm`-API, `SourceTextModule.prototype.hasAsyncGraph`) — CI läuft deshalb
+  auf Node 24 ([.github/workflows/test.yml](.github/workflows/test.yml)),
+  unabhängig davon, ob die Produktionsumgebung (Hostinger) eine niedrigere
+  Node-Version zum reinen `node dist/main.js`-Start ohne Jest akzeptiert.
+  **Ungeklärt**: welche Node-Version Hostingers Node.js-App-Manager aktuell
+  anbietet — vor dem nächsten Deploy dort prüfen, `backend/package.json`
+  `engines.node` (aktuell `>=20`, Nests eigene Angabe) ist nicht
+  gegengetestet gegen die tatsächlich dort verfügbaren Versionen.
 - **NestJS 12 bringt zusätzlich Express 5 mit** (`@nestjs/platform-express`
   pinnt es als direkte Abhängigkeit) — eigener Major, unabhängig von der
   ESM-Frage. `setGlobalPrefix("api/v1")` mountet die API seitdem als

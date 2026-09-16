@@ -13,7 +13,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          # >=24.9 nötig: Jest 30 nutzt Node's natives require(esm), um die
+          # ESM-only NestJS-12-Pakete zu laden (siehe README, ADR-0002).
+          node-version: 24
           cache: npm
       # Muss zur npm-Version passen, mit der package-lock.json erzeugt wurde
       # (README: npm ci scheitert sonst mit falschem "Missing: <pkg> from
