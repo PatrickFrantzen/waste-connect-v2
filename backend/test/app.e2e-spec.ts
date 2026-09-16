@@ -3,7 +3,7 @@ process.env.JWT_SECRET = process.env.JWT_SECRET || "test-secret";
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import { getConnectionToken, getModelToken } from "@nestjs/mongoose";
-import * as request from "supertest";
+import request from "supertest";
 import { AppModule } from "./../src/app.module";
 
 /**

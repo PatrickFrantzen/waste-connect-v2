@@ -3,7 +3,7 @@ import { JwtModule, JwtService } from "@nestjs/jwt";
 import { PassportModule, PassportStrategy } from "@nestjs/passport";
 import { Test } from "@nestjs/testing";
 import { ExtractJwt, Strategy } from "passport-jwt";
-import * as request from "supertest";
+import request from "supertest";
 import { EntsorgerController } from "./entsorger.controller";
 import { EntsorgerService } from "./entsorger.service";
 

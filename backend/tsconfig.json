@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    // TS 6.0 deprecatet baseUrl (Entfernung erst in 7.0); "src/..."-Imports
+    // in diesem Repo brauchen es weiterhin, Umschreiben ist eigener Refactor.
+    "ignoreDeprecations": "6.0",
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
@@ -9,6 +12,7 @@
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
+    "rootDir": "./src",
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,

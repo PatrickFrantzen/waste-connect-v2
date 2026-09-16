@@ -10,7 +10,7 @@ import { EntsorgerService } from "src/protected/entsorger/entsorger.service";
 import { LogistikerService } from "src/protected/logistiker/logistiker.service";
 import { MailingService } from "src/utils/mailing/mailing.service";
 import { AuthService } from "./auth.service";
-import * as bcryptjs from "bcryptjs";
+import bcryptjs from "bcryptjs";
 
 describe("AuthService", () => {
   let service: AuthService;

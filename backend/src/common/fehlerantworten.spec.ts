@@ -8,7 +8,7 @@ import {
   ValidationPipe,
 } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
-import * as request from "supertest";
+import request from "supertest";
 import { AllExceptionsFilter } from "./filters/all-exceptions.filter";
 import { CreateOfTheDayCalendarDto } from "src/protected/of-the-day-calendar/dto/create-of-the-day-calendar.dto";
 import { EmailDto } from "src/mixed-routes/email/dto/email.dto";

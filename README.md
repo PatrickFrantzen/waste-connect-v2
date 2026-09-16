@@ -47,6 +47,35 @@ fehlenden `ActivatedRoute`-Mocks. Gehört zu Schritt 2 (testbasierte
 Angular-Überarbeitung), nicht Teil dieses Repo-Umzugs. CI gatet deshalb
 vorerst nur auf dem vollständig grünen Backend-Testlauf (siehe unten).
 
+## Dependency-Updates
+
+Stand: NestJS 10 (Backend), Angular 22 + TypeScript 6.0 (Frontend). Beim
+nächsten Update unbedingt beachten:
+
+- **Hoisting-Duplikate**: `npm install <pkg>@x -w <workspace>` aktualisiert
+  oft nur eine verschachtelte Kopie in `<workspace>/node_modules`, während die
+  an die Root gehoistete Kopie alt bleibt — zwei Instanzen desselben Pakets
+  laufen dann parallel (bei `rxjs`, `mongoose` und `@angular/core` schon
+  passiert, jeweils mit kryptischen Laufzeit-/Typfehlern statt einer
+  offensichtlichen Fehlermeldung). Gegenmittel: Version in `package.json`
+  (`overrides`) eintragen, dann komplett `rm -rf node_modules */node_modules
+  package-lock.json && npm install` statt einem gezielten `npm install -w`.
+- **`ng update` funktioniert in diesem Workspace nicht zuverlässig**
+  ("Package '@angular/core' is not a dependency") — Versionen in
+  `frontend/package.json` manuell setzen und neu installieren.
+- **TypeScript-Major-Sprünge** können Namespace-Imports von CJS-Paketen
+  brechen (`import * as x from "y"` → `import x from "y"`), weil sich die
+  Interop-Strenge ändert: schon bei `bcryptjs` (Jest-Mock auf gefrorenem
+  Namespace-Objekt) und `supertest` (TS2349, nicht mehr aufrufbar) passiert.
+  Symptome tauchen erst beim Bauen/Testen auf, nicht als offensichtlicher
+  Versions-Fehler.
+- Root-`package.json` hat `"typescript": "6.0.3"` als Override, weil Backend
+  (`^5.1.3`) und Frontend (Angular 22 verlangt `>=6.0 <6.1`) sonst
+  unvereinbare Ranges hätten — Backend läuft inzwischen mitgetestet auf 6.0.3.
+- `npm install` brauchte einmalig `--legacy-peer-deps` (ts-jest/@babel/core-
+  Peer-Konflikt beim Hochziehen); das gebaute `package-lock.json` reicht
+  danach für normales `npm ci` (auch in CI), ohne das Flag erneut zu brauchen.
+
 ## Deployment
 
 Hostinger hPanel Node.js-App-Manager, GitHub-Auto-Deploy auf `main`

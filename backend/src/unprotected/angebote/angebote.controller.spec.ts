@@ -1,6 +1,6 @@
 import { INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
-import * as request from "supertest";
+import request from "supertest";
 import { EntsorgerDateienService } from "src/protected/entsorger/entsorger-dateien.service";
 import { EntsorgerStatistikService } from "src/protected/entsorger/entsorger-statistik.service";
 import { EntsorgerService } from "src/protected/entsorger/entsorger.service";

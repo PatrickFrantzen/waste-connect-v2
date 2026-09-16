@@ -11,7 +11,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { Benutzer } from "src/schemas/user.schema";
 import { AuthCredentialsDTO, UpdatePasswordDTO } from "./dto/auth-credentials.dto";
-import * as bcryptjs from "bcryptjs";
+import bcryptjs from "bcryptjs";
 import { JwtService } from "@nestjs/jwt";
 import { JwtPayload } from "./jwt-payload.interface";
 import { DocumentType } from "@typegoose/typegoose";
@@ -51,7 +51,7 @@ export class AuthService {
       await this.mailService.sendNewUserCreationToAdmin(createNewUser.email);
       return { message: "Du hast erfolgreich ein Konto erstellt. Bitte bestätige deine Emailadresse." };
     } catch (error) {
-      if (error.code === 11000) {
+      if ((error as { code?: number })?.code === 11000) {
         // Duplicate username Code für MongoDB
         throw new ConflictException(
           "Email bereits vergeben. Bitte wählen Sie eine andere Emailadresse."

@@ -8,7 +8,8 @@
   ],
   "overrides": {
     "rxjs": "7.8.2",
-    "mongoose": "8.24.4"
+    "mongoose": "8.24.4",
+    "typescript": "6.0.3"
   },
   "scripts": {
     "build": "npm run build -w frontend && node scripts/copy-frontend-build.js && npm run build -w backend",

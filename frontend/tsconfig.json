@@ -2,6 +2,10 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    // TS 6.0 deprecatet baseUrl (Entfernung erst in 7.0); der Codebase nutzt
+    // durchgängig 'src/app/...'-Imports statt relativer Pfade, das
+    // Umschreiben ist ein eigener Refactor (nicht Teil eines Versions-Bumps).
+    "ignoreDeprecations": "6.0",
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
