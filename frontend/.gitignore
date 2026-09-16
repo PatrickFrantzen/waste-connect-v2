@@ -5,6 +5,8 @@
 /tmp
 /out-tsc
 /bazel-out
+# per scripts/copy-pdf-viewer-assets.js reinkopiert (Angular 21 Asset-Root-Regel)
+/.pdf-viewer-assets
 
 # Node
 /node_modules
