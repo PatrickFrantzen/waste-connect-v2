@@ -5,6 +5,7 @@ import { INestApplication } from "@nestjs/common";
 import { getConnectionToken, getModelToken } from "@nestjs/mongoose";
 import request from "supertest";
 import { AppModule } from "./../src/app.module";
+import { BenutzerProfilRegistry } from "./../src/common/profil-initialisierer/benutzer-profil.registry";
 
 /**
  * Bootet die komplette Anwendung und ruft eine real existierende Route auf.
@@ -53,5 +54,16 @@ describe("AppModule (e2e)", () => {
 
   it("antwortet auf eine unbekannte Route mit 404", () => {
     return request(app.getHttpServer()).get("/gibt-es-nicht").expect(404);
+  });
+
+  // Löst die vorherige zirkuläre Modul-Kopplung AuthModule <-> Entsorger-/
+  // LogistikerModule ab (siehe Architecture Review). Nur ein voller
+  // App-Bootstrap beweist, dass sich beide Profil-Module beim Start
+  // tatsächlich an der Registry eintragen - der AuthService-Unit-Test mockt
+  // die Registry weg und könnte eine falsch verdrahtete Registrierung nicht
+  // bemerken.
+  it("registriert Entsorger- und Logistiker-Profilinitialisierer beim App-Start", () => {
+    const registry = app.get(BenutzerProfilRegistry);
+    expect(registry.getAll()).toHaveLength(2);
   });
 });

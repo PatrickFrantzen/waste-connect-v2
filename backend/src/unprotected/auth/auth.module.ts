@@ -1,4 +1,4 @@
-import { Module, forwardRef } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthController } from "./auth.controller";
 import { MongooseModule } from "@nestjs/mongoose";
@@ -7,9 +7,8 @@ import { PassportModule } from "@nestjs/passport";
 import { JwtModule } from "@nestjs/jwt";
 import { JwtStrategy } from "./jwt.strategy";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { EntsorgerModule } from "src/protected/entsorger/entsorger.module";
-import { LogistikerModule } from "src/protected/logistiker/logistiker.module";
 import { MailingModule } from "src/utils/mailing/mailing.module";
+import { ProfilInitialisiererModule } from "src/common/profil-initialisierer/profil-initialisierer.module";
 
 @Module({
   imports: [
@@ -24,8 +23,7 @@ import { MailingModule } from "src/utils/mailing/mailing.module";
       }),
     }),
     MongooseModule.forFeature([{ name: "Benutzer", schema: BenutzerSchema }]),
-    forwardRef(() => EntsorgerModule),
-    forwardRef(() => LogistikerModule),
+    ProfilInitialisiererModule,
     MailingModule,
   ],
   providers: [AuthService, JwtStrategy],

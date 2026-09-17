@@ -15,8 +15,7 @@ import bcryptjs from "bcryptjs";
 import { JwtService } from "@nestjs/jwt";
 import { JwtPayload } from "./jwt-payload.interface";
 import { DocumentType } from "@typegoose/typegoose";
-import { EntsorgerService } from "src/protected/entsorger/entsorger.service";
-import { LogistikerService } from "src/protected/logistiker/logistiker.service";
+import { BenutzerProfilRegistry } from "src/common/profil-initialisierer/benutzer-profil.registry";
 import { MailingService } from "src/utils/mailing/mailing.service";
 import * as crypto from "crypto";
 import { Benutzerdaten } from "src/models/benutzer/benutzderdaten.model";
@@ -27,8 +26,7 @@ export class AuthService {
 
   constructor(
     @InjectModel(Benutzer.name) private benutzerModel: Model<Benutzer>,
-    private entsorgerService: EntsorgerService,
-    private logistikerService: LogistikerService,
+    private profilRegistry: BenutzerProfilRegistry,
     private jwtService: JwtService,
     private mailService: MailingService
   ) {}
@@ -42,8 +40,18 @@ export class AuthService {
     const createNewUser = this.createNewUserObject(email, hashedPassword);
     try {
       await createNewUser.save();
-      this.entsorgerService.create(createNewUser._id); //Entsorgerprofil hinzufügen
-      this.logistikerService.create(createNewUser._id); //Logistikerprofil hinzufügen
+      try {
+        await Promise.all(
+          this.profilRegistry
+            .getAll()
+            .map((initialisierer) => initialisierer.erstelleProfil(createNewUser._id))
+        );
+      } catch (profilError) {
+        // Benutzer ohne Entsorger-/Logistiker-Profil ist ein inkonsistenter
+        // Zustand (siehe Architecture Review) - Rollback statt stillem Fail.
+        await createNewUser.deleteOne();
+        throw profilError;
+      }
       await this.mailService.sendUserConfirmation(
         createNewUser.email,
         createNewUser.benutzerdaten.emailToken
