@@ -8,7 +8,6 @@ import * as express from "express";
 import { existsSync } from "fs";
 import { join } from "path";
 import helmet from "helmet";
-const bodyParser = require("body-parser");
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -38,7 +37,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   // Einheitliches Fehlerformat für alle Endpunkte (siehe Issue #7).
   app.useGlobalFilters(new AllExceptionsFilter());
-  app.use(bodyParser.json({ limit: "50mb" }));
+  app.use(express.json({ limit: "50mb" }));
   app.use("/uploads", express.static(join(__dirname, "..", "uploads")));
   app.use(express.static(join(__dirname, "..", "public")));
 
